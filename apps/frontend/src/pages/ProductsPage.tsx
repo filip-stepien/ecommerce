@@ -1,7 +1,6 @@
 import { QueryResult } from '@/components/QueryResult';
 import { useProducts } from '@/features/products/hooks/useProducts';
-
-const priceFormat = new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN' });
+import { formatPrice } from '@/lib/format';
 
 export function ProductsPage() {
     const { products, isLoading, error } = useProducts();
@@ -21,7 +20,7 @@ export function ProductsPage() {
                         {products.map(product => (
                             <li key={product.id}>
                                 <span>{product.name}</span>
-                                <span>{priceFormat.format(product.price)}</span>
+                                <span>{formatPrice(product.price)}</span>
                             </li>
                         ))}
                     </ul>
