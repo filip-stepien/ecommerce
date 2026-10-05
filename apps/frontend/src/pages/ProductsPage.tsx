@@ -3,6 +3,7 @@ import { QueryResult } from '@/components/QueryResult';
 import { ProductFilters } from '@/features/products/components/ProductFilters';
 import { ProductGrid } from '@/features/products/components/ProductGrid';
 import { ProductSearch } from '@/features/products/components/ProductSearch';
+import { RecommendedProductsCarousel } from '@/features/products/components/RecommendedProductsCarousel';
 import { useProductCatalog } from '@/features/products/hooks/useProductCatalog';
 
 export function ProductsPage() {
@@ -37,6 +38,7 @@ export function ProductsPage() {
                     </QueryResult>
                 </Stack>
             </Flex>
+            <RecommendedProductsCarousel />
         </Stack>
     );
 }

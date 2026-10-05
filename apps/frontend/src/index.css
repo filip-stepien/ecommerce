@@ -1,20 +1,13 @@
-/*
- * Kolejność warstw: późniejsza wygrywa.
- * - preflight Tailwinda (base) jest pod Mantine, więc nie resetuje stylów komponentów,
- * - utilities Tailwinda są nad Mantine, więc klasy typu `className="mt-4"` nadpisują style Mantine.
- * Własne style trzymaj w warstwie (base/components) - CSS bez warstwy wygrywa ze wszystkim.
- */
 @layer theme, base, mantine, components, utilities;
 
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/preflight.css' layer(base);
 @import 'tailwindcss/utilities.css' layer(utilities);
 @import '@mantine/core/styles.layer.css';
+@import '@mantine/carousel/styles.layer.css';
 
-/* `dark:` w Tailwindzie podąża za schematem kolorów Mantine, a nie tylko za systemowym */
 @custom-variant dark (&:where([data-mantine-color-scheme='dark'], [data-mantine-color-scheme='dark'] *));
 
-/* Breakpointy zgodne z Mantine (xs/sm/md/lg/xl), żeby `md:` i `hiddenFrom="md"` znaczyły to samo */
 @theme {
     --breakpoint-xs: 36em;
     --breakpoint-sm: 48em;
