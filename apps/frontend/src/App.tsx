@@ -1,42 +1,57 @@
-import { useAuth } from 'react-oidc-context';
-import { useGetProducts } from './api/generated/products/products';
-import { useGetCurrentUser } from './api/generated/users/users';
+import { useGetProducts } from '@/api/generated/products/products';
+import { QueryResult } from '@/components/QueryResult';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser';
 
 const priceFormat = new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN' });
 
 function Products() {
     const { data: products, isPending, error } = useGetProducts();
 
-    if (isPending) return <p>Ładowanie produktów…</p>;
-    if (error) return <p role='alert'>Nie udało się pobrać produktów: {error.message}</p>;
-
     return (
-        <ul className='products'>
-            {products.map(product => (
-                <li key={product.id}>
-                    <span>{product.name}</span>
-                    <span>{priceFormat.format(product.price)}</span>
-                </li>
-            ))}
-        </ul>
+        <QueryResult
+            data={products}
+            isLoading={isPending}
+            error={error}
+            loadingText='Ładowanie produktów…'
+            errorText='Nie udało się pobrać produktów'
+        >
+            {products => (
+                <ul className='products'>
+                    {products.map(product => (
+                        <li key={product.id}>
+                            <span>{product.name}</span>
+                            <span>{priceFormat.format(product.price)}</span>
+                        </li>
+                    ))}
+                </ul>
+            )}
+        </QueryResult>
     );
 }
 
 function CurrentUser() {
-    const { data: user, isPending, error } = useGetCurrentUser();
-
-    if (isPending) return <p>Ładowanie danych użytkownika…</p>;
-    if (error) return <p role='alert'>Nie udało się pobrać użytkownika: {error.message}</p>;
+    const { user, isLoading, error } = useCurrentUser();
 
     return (
-        <dl className='user'>
-            <dt>Login</dt>
-            <dd>{user.username}</dd>
-            <dt>E-mail</dt>
-            <dd>{user.email ?? '—'}</dd>
-            <dt>Role</dt>
-            <dd>{user.roles.join(', ') || '—'}</dd>
-        </dl>
+        <QueryResult
+            data={user}
+            isLoading={isLoading}
+            error={error}
+            loadingText='Ładowanie danych użytkownika…'
+            errorText='Nie udało się pobrać użytkownika'
+        >
+            {user => (
+                <dl className='user'>
+                    <dt>Login</dt>
+                    <dd>{user.username}</dd>
+                    <dt>E-mail</dt>
+                    <dd>{user.email ?? '—'}</dd>
+                    <dt>Role</dt>
+                    <dd>{user.roles.join(', ') || '—'}</dd>
+                </dl>
+            )}
+        </QueryResult>
     );
 }
 
@@ -48,14 +63,14 @@ function App() {
             <header>
                 <h1>Ecommerce</h1>
                 {auth.isAuthenticated ? (
-                    <button type='button' onClick={() => void auth.signoutRedirect()}>
+                    <button type='button' onClick={() => void auth.signOut()}>
                         Wyloguj
                     </button>
                 ) : (
                     <button
                         type='button'
                         disabled={auth.isLoading}
-                        onClick={() => void auth.signinRedirect()}
+                        onClick={() => void auth.signIn()}
                     >
                         Zaloguj
                     </button>

@@ -23,8 +23,8 @@ import type {
   Product
 } from '../model';
 
-import { http } from '../../http';
-import type { ErrorType } from '../../http';
+import { apiClient } from '../../apiClient';
+import type { ErrorType } from '../../apiClient';
 
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
@@ -54,9 +54,9 @@ export const getGetProductsUrl = () => {
   return `/api/products`
 }
 
-export const getProducts = async ( options?: Parameters<typeof http>[1]): Promise<Product[]> => {
+export const getProducts = async ( options?: Parameters<typeof apiClient>[1]): Promise<Product[]> => {
 
-  return http<Product[]>(getGetProductsUrl(),
+  return apiClient<Product[]>(getGetProductsUrl(),
   {
     ...options,
     method: 'GET'
@@ -76,7 +76,7 @@ export const getGetProductsQueryKey = () => {
     }
 
 
-export const getGetProductsQueryOptions = <TData = Awaited<ReturnType<typeof getProducts>>, TError = ErrorType<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProducts>>, TError, TData>>, request?: SecondParameter<typeof http>}
+export const getGetProductsQueryOptions = <TData = Awaited<ReturnType<typeof getProducts>>, TError = ErrorType<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProducts>>, TError, TData>>, request?: SecondParameter<typeof apiClient>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -105,7 +105,7 @@ export function useGetProducts<TData = Awaited<ReturnType<typeof getProducts>>, 
           TError,
           Awaited<ReturnType<typeof getProducts>>
         > , 'initialData'
-      >, request?: SecondParameter<typeof http>}
+      >, request?: SecondParameter<typeof apiClient>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetProducts<TData = Awaited<ReturnType<typeof getProducts>>, TError = ErrorType<unknown>>(
@@ -115,16 +115,16 @@ export function useGetProducts<TData = Awaited<ReturnType<typeof getProducts>>, 
           TError,
           Awaited<ReturnType<typeof getProducts>>
         > , 'initialData'
-      >, request?: SecondParameter<typeof http>}
+      >, request?: SecondParameter<typeof apiClient>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetProducts<TData = Awaited<ReturnType<typeof getProducts>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProducts>>, TError, TData>>, request?: SecondParameter<typeof http>}
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProducts>>, TError, TData>>, request?: SecondParameter<typeof apiClient>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
 export function useGetProducts<TData = Awaited<ReturnType<typeof getProducts>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProducts>>, TError, TData>>, request?: SecondParameter<typeof http>}
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProducts>>, TError, TData>>, request?: SecondParameter<typeof apiClient>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 

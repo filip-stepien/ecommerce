@@ -23,8 +23,8 @@ import type {
   CurrentUser
 } from '../model';
 
-import { http } from '../../http';
-import type { ErrorType } from '../../http';
+import { apiClient } from '../../apiClient';
+import type { ErrorType } from '../../apiClient';
 
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
@@ -54,9 +54,9 @@ export const getGetCurrentUserUrl = () => {
   return `/api/me`
 }
 
-export const getCurrentUser = async ( options?: Parameters<typeof http>[1]): Promise<CurrentUser> => {
+export const getCurrentUser = async ( options?: Parameters<typeof apiClient>[1]): Promise<CurrentUser> => {
 
-  return http<CurrentUser>(getGetCurrentUserUrl(),
+  return apiClient<CurrentUser>(getGetCurrentUserUrl(),
   {
     ...options,
     method: 'GET'
@@ -76,7 +76,7 @@ export const getGetCurrentUserQueryKey = () => {
     }
 
 
-export const getGetCurrentUserQueryOptions = <TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = ErrorType<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>>, request?: SecondParameter<typeof http>}
+export const getGetCurrentUserQueryOptions = <TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = ErrorType<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>>, request?: SecondParameter<typeof apiClient>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -105,7 +105,7 @@ export function useGetCurrentUser<TData = Awaited<ReturnType<typeof getCurrentUs
           TError,
           Awaited<ReturnType<typeof getCurrentUser>>
         > , 'initialData'
-      >, request?: SecondParameter<typeof http>}
+      >, request?: SecondParameter<typeof apiClient>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetCurrentUser<TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = ErrorType<unknown>>(
@@ -115,16 +115,16 @@ export function useGetCurrentUser<TData = Awaited<ReturnType<typeof getCurrentUs
           TError,
           Awaited<ReturnType<typeof getCurrentUser>>
         > , 'initialData'
-      >, request?: SecondParameter<typeof http>}
+      >, request?: SecondParameter<typeof apiClient>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetCurrentUser<TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>>, request?: SecondParameter<typeof http>}
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>>, request?: SecondParameter<typeof apiClient>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
 export function useGetCurrentUser<TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>>, request?: SecondParameter<typeof http>}
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>>, request?: SecondParameter<typeof apiClient>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
