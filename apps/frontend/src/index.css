@@ -1,104 +1,130 @@
-:root {
-    --text: #4b4658;
-    --text-h: #08060d;
-    --bg: #fff;
-    --border: #e5e4e7;
-    --accent: #6d28d9;
+/*
+ * Kolejność warstw: późniejsza wygrywa.
+ * - preflight Tailwinda (base) jest pod Mantine, więc nie resetuje stylów komponentów,
+ * - utilities Tailwinda są nad Mantine, więc klasy typu `className="mt-4"` nadpisują style Mantine.
+ * Własne style trzymaj w warstwie (base/components) - CSS bez warstwy wygrywa ze wszystkim.
+ */
+@layer theme, base, mantine, components, utilities;
 
-    font:
-        16px/1.5 system-ui,
-        'Segoe UI',
-        Roboto,
-        sans-serif;
-    color-scheme: light dark;
-    color: var(--text);
-    background: var(--bg);
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+@import 'tailwindcss/utilities.css' layer(utilities);
+@import '@mantine/core/styles.layer.css';
+
+/* `dark:` w Tailwindzie podąża za schematem kolorów Mantine, a nie tylko za systemowym */
+@custom-variant dark (&:where([data-mantine-color-scheme='dark'], [data-mantine-color-scheme='dark'] *));
+
+/* Breakpointy zgodne z Mantine (xs/sm/md/lg/xl), żeby `md:` i `hiddenFrom="md"` znaczyły to samo */
+@theme {
+    --breakpoint-xs: 36em;
+    --breakpoint-sm: 48em;
+    --breakpoint-md: 62em;
+    --breakpoint-lg: 75em;
+    --breakpoint-xl: 88em;
 }
 
-@media (prefers-color-scheme: dark) {
+@layer base {
     :root {
+        --text: #4b4658;
+        --text-h: #08060d;
+        --bg: #fff;
+        --border: #e5e4e7;
+        --accent: #6d28d9;
+
+        font:
+            16px/1.5 system-ui,
+            'Segoe UI',
+            Roboto,
+            sans-serif;
+        color: var(--text);
+        background: var(--bg);
+    }
+
+    :root[data-mantine-color-scheme='dark'] {
         --text: #b6bac4;
         --text-h: #f3f4f6;
         --bg: #16171d;
         --border: #2e303a;
         --accent: #c084fc;
     }
+
+    body {
+        margin: 0;
+    }
+
+    main {
+        max-width: 40rem;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    h1,
+    h2 {
+        color: var(--text-h);
+    }
+
+    section {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+    }
+
+    button {
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--accent);
+        border-radius: 0.375rem;
+        background: transparent;
+        color: var(--accent);
+        font: inherit;
+        cursor: pointer;
+    }
+
+    button:disabled {
+        opacity: 0.5;
+        cursor: default;
+    }
 }
 
-body {
-    margin: 0;
-}
+@layer components {
+    .hint {
+        margin-top: -0.5rem;
+        font-family: ui-monospace, Consolas, monospace;
+        font-size: 0.8125rem;
+    }
 
-main {
-    max-width: 40rem;
-    margin: 0 auto;
-    padding: 2rem 1rem;
-}
+    .products {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
 
-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-}
+    .products li {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border);
+    }
 
-h1,
-h2 {
-    color: var(--text-h);
-}
+    .user {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 0.25rem 1rem;
+        margin: 0;
+    }
 
-section {
-    margin-top: 2rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border);
-}
+    .user dt {
+        font-weight: 600;
+    }
 
-.hint {
-    margin-top: -0.5rem;
-    font-family: ui-monospace, Consolas, monospace;
-    font-size: 0.8125rem;
-}
-
-button {
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--accent);
-    border-radius: 0.375rem;
-    background: transparent;
-    color: var(--accent);
-    font: inherit;
-    cursor: pointer;
-}
-
-button:disabled {
-    opacity: 0.5;
-    cursor: default;
-}
-
-.products {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.products li {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid var(--border);
-}
-
-.user {
-    display: grid;
-    grid-template-columns: max-content 1fr;
-    gap: 0.25rem 1rem;
-    margin: 0;
-}
-
-.user dt {
-    font-weight: 600;
-}
-
-.user dd {
-    margin: 0;
+    .user dd {
+        margin: 0;
+    }
 }
