@@ -1,13 +1,12 @@
 import { Box, Container, Group, Text } from '@mantine/core';
 import { ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router';
-import { CategoryNav } from '@/components/CategoryNav';
 import { AccountMenu } from '@/features/auth/components/AccountMenu';
 import { appRoutes } from '@/lib/routes';
 
 export function Header() {
     return (
-        <Box component='header' className='bg-body'>
+        <Box component='header' className='border-b border-default-border bg-body'>
             <Container>
                 <Group className='h-22 justify-between'>
                     <Text
@@ -26,7 +25,6 @@ export function Header() {
                     </Group>
                 </Group>
             </Container>
-            <CategoryNav />
         </Box>
     );
 }
