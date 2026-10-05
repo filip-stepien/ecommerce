@@ -1,6 +1,6 @@
 import { Outlet, Route, Routes } from 'react-router';
+import { Layout } from '@/components/Layout';
 import { AuthGuard } from '@/features/auth/components/AuthGuard';
-import { MainLayout } from '@/layouts/MainLayout';
 import { AppRoutes } from '@/lib/routes';
 import { AccountPage } from '@/pages/AccountPage';
 import { ProductsPage } from '@/pages/ProductsPage';
@@ -8,7 +8,7 @@ import { ProductsPage } from '@/pages/ProductsPage';
 export function Router() {
     return (
         <Routes>
-            <Route path={AppRoutes.home} element={<MainLayout />}>
+            <Route path={AppRoutes.home} element={<Layout />}>
                 <Route index element={<ProductsPage />} />
                 <Route
                     element={
