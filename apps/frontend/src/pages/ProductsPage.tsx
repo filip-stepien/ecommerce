@@ -1,7 +1,6 @@
-import { Flex, Stack, Text, Title } from '@mantine/core';
+import { Box, Flex, Stack, Text, Title } from '@mantine/core';
 import { ProductFilters } from '@/features/products/components/ProductFilters';
 import { ProductGrid } from '@/features/products/components/ProductGrid';
-import { ProductSearch } from '@/features/products/components/ProductSearch';
 import { RecommendedProductsCarousel } from '@/features/products/components/RecommendedProductsCarousel';
 import { useProductCatalog } from '@/features/products/hooks/useProductCatalog';
 
@@ -22,13 +21,9 @@ export function ProductsPage() {
                     onChange={catalog.setFilters}
                     onClear={catalog.clearFilters}
                 />
-                <Stack className='w-full min-w-0 flex-1 gap-5 md:w-auto'>
-                    <ProductSearch
-                        value={catalog.query.filters.search}
-                        onChange={search => catalog.setFilters({ search })}
-                    />
+                <Box className='w-full min-w-0 flex-1 md:w-auto'>
                     <ProductGrid catalog={catalog} />
-                </Stack>
+                </Box>
             </Flex>
             <RecommendedProductsCarousel />
         </Stack>
