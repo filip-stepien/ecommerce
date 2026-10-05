@@ -1,11 +1,11 @@
-import { Alert, Text } from '@mantine/core';
+import { Alert } from '@mantine/core';
 import type { ReactNode } from 'react';
+import { Spinner } from '@/components/Spinner';
 
 type QueryResultProps<T> = {
     data: T | null | undefined;
     isLoading: boolean;
     error: { message: string } | null;
-    loadingText?: string;
     errorText?: string;
     children: (data: T) => ReactNode;
 };
@@ -14,11 +14,10 @@ export function QueryResult<T>({
     data,
     isLoading,
     error,
-    loadingText = 'Ładowanie...',
     errorText = 'Nie udało się pobrać danych',
     children
 }: QueryResultProps<T>) {
-    if (isLoading) return <Text className='text-dimmed'>{loadingText}</Text>;
+    if (isLoading) return <Spinner />;
 
     if (error) {
         return (

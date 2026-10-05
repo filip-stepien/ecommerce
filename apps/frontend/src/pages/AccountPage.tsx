@@ -11,7 +11,6 @@ export function AccountPage() {
                 data={user}
                 isLoading={isLoading}
                 error={error}
-                loadingText='Ładowanie danych użytkownika…'
                 errorText='Nie udało się pobrać użytkownika'
             >
                 {user => (

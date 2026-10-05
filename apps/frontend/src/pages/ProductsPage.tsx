@@ -31,7 +31,6 @@ export function ProductsPage() {
                         data={catalog.products}
                         isLoading={catalog.isLoading}
                         error={catalog.error}
-                        loadingText='Ładowanie produktów…'
                         errorText='Nie udało się pobrać produktów'
                     >
                         {() => <ProductGrid catalog={catalog} />}

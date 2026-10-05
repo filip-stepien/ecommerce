@@ -1,4 +1,5 @@
 import type { PropsWithChildren } from 'react';
+import { Spinner } from '@/components/Spinner';
 import { useRequireAuth } from '@/features/auth/hooks/useRequireAuth';
 
 export function AuthGuard({ children }: PropsWithChildren) {
@@ -7,5 +8,5 @@ export function AuthGuard({ children }: PropsWithChildren) {
     if (isAuthenticated) return children;
     if (error) return <p>Zaloguj się, żeby zobaczyć tę stronę.</p>;
 
-    return <p>Ładowanie...</p>;
+    return <Spinner />;
 }
