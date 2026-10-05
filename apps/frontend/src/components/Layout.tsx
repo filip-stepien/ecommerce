@@ -3,9 +3,11 @@ import { Outlet } from 'react-router';
 import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useScrollToTop } from '@/hooks/useScrollToTop';
 
 export function Layout() {
     const auth = useAuth();
+    useScrollToTop();
 
     return (
         <Box className='flex min-h-screen flex-col bg-(--mantine-color-gray-0) dark:bg-(--mantine-color-dark-8)'>

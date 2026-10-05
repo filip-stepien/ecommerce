@@ -1,4 +1,5 @@
 export const appRoutes = {
     home: '/',
-    account: '/account'
+    account: '/account',
+    product: '/products/:id'
 } as const;
