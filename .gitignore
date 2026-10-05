@@ -1,0 +1,12 @@
+.task/
+
+.idea/
+.vscode/
+*.iml
+
+.DS_Store
+Thumbs.db
+
+.env
+.env.local
+docker-compose.override.yml

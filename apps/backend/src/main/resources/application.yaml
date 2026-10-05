@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: backend
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/ecommerce}
+    username: ${DATABASE_USERNAME:ecommerce}
+    password: ${DATABASE_PASSWORD:ecommerce}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8081/realms/ecommerce}
+          audiences: ecommerce-api
+
+springdoc:
+  default-produces-media-type: application/json
+  writer-with-default-pretty-printer: true

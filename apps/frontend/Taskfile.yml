@@ -1,0 +1,48 @@
+version: '3'
+
+tasks:
+  install:
+    desc: Install frontend dependencies
+    sources:
+      - package.json
+      - pnpm-lock.yaml
+    generates:
+      - node_modules/.modules.yaml
+    cmds:
+      - pnpm install
+
+  dev:
+    desc: Start the frontend on http://localhost:5173
+    deps: [install]
+    cmds:
+      - pnpm dev
+
+  build:
+    desc: Build the frontend
+    deps: [install]
+    cmds:
+      - pnpm build
+
+  lint:
+    desc: Lint the frontend
+    deps: [install]
+    cmds:
+      - pnpm lint
+
+  format:
+    desc: Format the frontend with Prettier
+    deps: [install]
+    cmds:
+      - pnpm format
+
+  format:check:
+    desc: Check frontend formatting
+    deps: [install]
+    cmds:
+      - pnpm format:check
+
+  api:
+    desc: Generate the API client (orval) from openapi/openapi.json
+    deps: [install]
+    cmds:
+      - pnpm api:generate
