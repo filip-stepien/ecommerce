@@ -1,7 +1,7 @@
 import { type RequestError, toRequestError } from '@/api/error';
 import type { CurrentUser } from '@/api/generated/model';
 import { useGetCurrentUser } from '@/api/generated/users/users';
-import { useDebugQuery } from '@/hooks/useDebugQuery';
+import { debug_useQuery } from '@/hooks/debug_useQuery';
 import { Env } from '@/lib/env';
 import { useAuth } from './useAuth';
 
@@ -38,8 +38,8 @@ function useApiCurrentUser(): UseCurrentUserResult {
     };
 }
 
-function useDebugCurrentUser(): UseCurrentUserResult {
-    const { data, isLoading } = useDebugQuery<User>({
+function debug_useStaticCurrentUser(): UseCurrentUserResult {
+    const { data, isLoading } = debug_useQuery<User>({
         username: 'user',
         email: 'user@example.com',
         roles: ['user']
@@ -52,4 +52,4 @@ function useDebugCurrentUser(): UseCurrentUserResult {
     };
 }
 
-export const useCurrentUser = Env.isDebug ? useDebugCurrentUser : useApiCurrentUser;
+export const useCurrentUser = Env.isDebug ? debug_useStaticCurrentUser : useApiCurrentUser;

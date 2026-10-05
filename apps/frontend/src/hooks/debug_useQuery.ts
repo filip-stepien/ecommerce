@@ -6,7 +6,7 @@ export type UseDebugQueryResult<T> = {
     isLoading: boolean;
 };
 
-export function useDebugQuery<T>(data: T, delayMs = 500): UseDebugQueryResult<T> {
+export function debug_useQuery<T>(data: T, delayMs = 500): UseDebugQueryResult<T> {
     const [isLoading, setIsLoading] = useState(true);
 
     useTimeout(() => setIsLoading(false), delayMs, { autoInvoke: true });

@@ -1,31 +1,43 @@
+import { Flex, Stack, Text, Title } from '@mantine/core';
 import { QueryResult } from '@/components/QueryResult';
-import { useProducts } from '@/features/products/hooks/useProducts';
-import { formatPrice } from '@/lib/format';
+import { ProductFilters } from '@/features/products/components/ProductFilters';
+import { ProductGrid } from '@/features/products/components/ProductGrid';
+import { ProductSearch } from '@/features/products/components/ProductSearch';
+import { useProductCatalog } from '@/features/products/hooks/useProductCatalog';
 
 export function ProductsPage() {
-    const { products, isLoading, error } = useProducts();
+    const catalog = useProductCatalog();
 
     return (
-        <section>
-            <h2>Produkty</h2>
-            <QueryResult
-                data={products}
-                isLoading={isLoading}
-                error={error}
-                loadingText='Ładowanie produktów…'
-                errorText='Nie udało się pobrać produktów'
-            >
-                {products => (
-                    <ul className='products'>
-                        {products.map(product => (
-                            <li key={product.id}>
-                                <span>{product.name}</span>
-                                <span>{formatPrice(product.price)}</span>
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </QueryResult>
-        </section>
+        <Stack className='gap-7'>
+            <Stack className='gap-2'>
+                <Title order={1} className='text-[32px]'>
+                    Wszystkie produkty
+                </Title>
+                <Text className='text-sm text-dimmed'>Przeglądaj produkty dostępne w sklepie.</Text>
+            </Stack>
+            <Flex className='flex-col items-start gap-7 md:flex-row'>
+                <ProductFilters
+                    values={catalog.query.filters}
+                    onChange={catalog.setFilters}
+                    onClear={catalog.clearFilters}
+                />
+                <Stack className='w-full min-w-0 flex-1 gap-5 md:w-auto'>
+                    <ProductSearch
+                        value={catalog.query.filters.search}
+                        onChange={search => catalog.setFilters({ search })}
+                    />
+                    <QueryResult
+                        data={catalog.products}
+                        isLoading={catalog.isLoading}
+                        error={catalog.error}
+                        loadingText='Ładowanie produktów…'
+                        errorText='Nie udało się pobrać produktów'
+                    >
+                        {() => <ProductGrid catalog={catalog} />}
+                    </QueryResult>
+                </Stack>
+            </Flex>
+        </Stack>
     );
 }

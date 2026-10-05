@@ -1,3 +1,4 @@
+import { Alert, Text } from '@mantine/core';
 import type { ReactNode } from 'react';
 
 type QueryResultProps<T> = {
@@ -17,13 +18,13 @@ export function QueryResult<T>({
     errorText = 'Nie udało się pobrać danych',
     children
 }: QueryResultProps<T>) {
-    if (isLoading) return <p>{loadingText}</p>;
+    if (isLoading) return <Text className='text-dimmed'>{loadingText}</Text>;
 
     if (error) {
         return (
-            <p role='alert'>
-                {errorText}: {error.message}
-            </p>
+            <Alert color='red' title={errorText}>
+                {error.message}
+            </Alert>
         );
     }
 

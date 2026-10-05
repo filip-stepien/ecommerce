@@ -18,7 +18,7 @@ function RoutedAuthProvider({ children }: PropsWithChildren) {
 
 export function Providers({ children }: PropsWithChildren) {
     return (
-        <MantineProvider theme={theme} defaultColorScheme='auto'>
+        <MantineProvider theme={theme} defaultColorScheme='light'>
             <QueryClientProvider client={queryClient}>
                 <BrowserRouter>
                     <RoutedAuthProvider>{children}</RoutedAuthProvider>
