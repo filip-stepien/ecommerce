@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from 'react';
 import { AuthProvider as OidcAuthProvider } from 'react-oidc-context';
-import { getReturnTo } from '@/features/auth/lib/signInState';
+import { getReturnToPathFromOidcUser } from '@/features/auth/lib/redirectState';
 import { userManager } from '@/features/auth/lib/userManager';
 
 type AuthProviderProps = PropsWithChildren<{
@@ -11,7 +11,7 @@ export function AuthProvider({ onSignedIn, children }: AuthProviderProps) {
     return (
         <OidcAuthProvider
             userManager={userManager}
-            onSigninCallback={user => onSignedIn(getReturnTo(user))}
+            onSigninCallback={user => onSignedIn(getReturnToPathFromOidcUser(user))}
         >
             {children}
         </OidcAuthProvider>
