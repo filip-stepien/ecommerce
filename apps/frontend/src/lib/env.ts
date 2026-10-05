@@ -23,7 +23,7 @@ function bool(name: string): boolean {
 }
 
 export const Env = {
-    isDevelopment: bool('DEV'),
+    isDebug: bool('VITE_DEBUG'),
     oidcAuthority: str('VITE_OIDC_AUTHORITY'),
     oidcClientId: str('VITE_OIDC_CLIENT_ID')
 } as const;

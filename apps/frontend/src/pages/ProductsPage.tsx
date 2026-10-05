@@ -1,17 +1,17 @@
-import { useGetProducts } from '@/api/generated/products/products';
 import { QueryResult } from '@/components/QueryResult';
+import { useProducts } from '@/features/products/hooks/useProducts';
 
 const priceFormat = new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN' });
 
 export function ProductsPage() {
-    const { data: products, isPending, error } = useGetProducts();
+    const { products, isLoading, error } = useProducts();
 
     return (
         <section>
             <h2>Produkty</h2>
             <QueryResult
                 data={products}
-                isLoading={isPending}
+                isLoading={isLoading}
                 error={error}
                 loadingText='Ładowanie produktów…'
                 errorText='Nie udało się pobrać produktów'

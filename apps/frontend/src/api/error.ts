@@ -23,6 +23,6 @@ function toErrorReason(error: Error): RequestError['reason'] {
     return 'unknown';
 }
 
-export function toRequestError(error: Error): RequestError {
-    return { reason: toErrorReason(error), message: error.message };
+export function toRequestError(error: Error | null): RequestError | null {
+    return error ? { reason: toErrorReason(error), message: error.message } : null;
 }
