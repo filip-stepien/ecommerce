@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth as useOidcContext } from 'react-oidc-context';
+import { type AuthError, toAuthError } from '@/features/auth/lib/error';
 import type { SignInState } from '@/features/auth/lib/redirectState';
 import { Env } from '@/lib/env';
 import { getCurrentFullPath } from '@/lib/path';
@@ -7,7 +8,7 @@ import { getCurrentFullPath } from '@/lib/path';
 export type UseAuthResult = {
     isAuthenticated: boolean;
     isLoading: boolean;
-    error: Error | null;
+    error: AuthError | null;
     signIn: (returnTo?: string) => Promise<void>;
     signOut: () => Promise<void>;
 };
@@ -18,7 +19,7 @@ function useOidcAuth(): UseAuthResult {
     return {
         isAuthenticated: oidc.isAuthenticated,
         isLoading: oidc.isLoading,
-        error: oidc.error ?? null,
+        error: toAuthError(oidc.error),
         signIn: (returnTo = getCurrentFullPath()) => {
             const state: SignInState = { returnTo };
             return oidc.signinRedirect({ state });
