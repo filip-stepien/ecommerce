@@ -1,5 +1,7 @@
-import { useAuth as useOidcAuth } from 'react-oidc-context';
+import { useState } from 'react';
+import { useAuth as useOidcContext } from 'react-oidc-context';
 import type { SignInState } from '@/features/auth/lib/redirectState';
+import { Env } from '@/lib/env';
 import { getCurrentFullPath } from '@/lib/path';
 
 export type UseAuthResult = {
@@ -10,8 +12,8 @@ export type UseAuthResult = {
     signOut: () => Promise<void>;
 };
 
-export function useAuth(): UseAuthResult {
-    const oidc = useOidcAuth();
+function useOidcAuth(): UseAuthResult {
+    const oidc = useOidcContext();
 
     return {
         isAuthenticated: oidc.isAuthenticated,
@@ -24,3 +26,26 @@ export function useAuth(): UseAuthResult {
         signOut: () => oidc.signoutRedirect()
     };
 }
+
+function useDebugAuth(): UseAuthResult {
+    const debugAuthSessionStorageKey = 'debug-auth';
+    const [isAuthenticated] = useState(
+        () => window.sessionStorage.getItem(debugAuthSessionStorageKey) === 'true'
+    );
+
+    return {
+        isAuthenticated,
+        isLoading: false,
+        error: null,
+        signIn: async (returnTo = getCurrentFullPath()) => {
+            window.sessionStorage.setItem(debugAuthSessionStorageKey, 'true');
+            window.location.assign(returnTo);
+        },
+        signOut: async () => {
+            window.sessionStorage.removeItem(debugAuthSessionStorageKey);
+            window.location.assign(window.location.origin);
+        }
+    };
+}
+
+export const useAuth = Env.isDebug ? useDebugAuth : useOidcAuth;
