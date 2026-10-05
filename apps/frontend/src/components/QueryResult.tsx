@@ -7,6 +7,7 @@ type QueryResultProps<T> = {
     isLoading: boolean;
     error: { message: string } | null;
     errorText?: string;
+    loader?: ReactNode;
     children: (data: T) => ReactNode;
 };
 
@@ -15,9 +16,10 @@ export function QueryResult<T>({
     isLoading,
     error,
     errorText = 'Nie udało się pobrać danych',
+    loader = <Spinner />,
     children
 }: QueryResultProps<T>) {
-    if (isLoading) return <Spinner />;
+    if (isLoading) return loader;
 
     if (error) {
         return (

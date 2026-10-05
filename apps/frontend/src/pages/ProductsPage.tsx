@@ -1,5 +1,4 @@
 import { Flex, Stack, Text, Title } from '@mantine/core';
-import { QueryResult } from '@/components/QueryResult';
 import { ProductFilters } from '@/features/products/components/ProductFilters';
 import { ProductGrid } from '@/features/products/components/ProductGrid';
 import { ProductSearch } from '@/features/products/components/ProductSearch';
@@ -27,15 +26,9 @@ export function ProductsPage() {
                     <ProductSearch
                         value={catalog.query.filters.search}
                         onChange={search => catalog.setFilters({ search })}
+                        disabled={catalog.isLoading}
                     />
-                    <QueryResult
-                        data={catalog.products}
-                        isLoading={catalog.isLoading}
-                        error={catalog.error}
-                        errorText='Nie udało się pobrać produktów'
-                    >
-                        {() => <ProductGrid catalog={catalog} />}
-                    </QueryResult>
+                    <ProductGrid catalog={catalog} />
                 </Stack>
             </Flex>
             <RecommendedProductsCarousel />
