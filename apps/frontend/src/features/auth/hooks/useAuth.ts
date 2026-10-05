@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth as useOidcContext } from 'react-oidc-context';
 import { type AuthError, toAuthError } from '@/features/auth/lib/error';
 import type { SignInState } from '@/features/auth/lib/redirectState';
-import { Env } from '@/lib/env';
+import { env } from '@/lib/env';
 import { getCurrentFullPath } from '@/lib/path';
 
 export type UseAuthResult = {
@@ -49,4 +49,4 @@ function useDebugAuth(): UseAuthResult {
     };
 }
 
-export const useAuth = Env.isDebug ? useDebugAuth : useOidcAuth;
+export const useAuth = env.isDebug ? useDebugAuth : useOidcAuth;

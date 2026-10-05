@@ -2,7 +2,7 @@ import { type RequestError, toRequestError } from '@/api/error';
 import type { CurrentUser } from '@/api/generated/model';
 import { useGetCurrentUser } from '@/api/generated/users/users';
 import { debug_useQuery } from '@/hooks/debug_useQuery';
-import { Env } from '@/lib/env';
+import { env } from '@/lib/env';
 import { useAuth } from './useAuth';
 
 export type User = {
@@ -52,4 +52,4 @@ function debug_useStaticCurrentUser(): UseCurrentUserResult {
     };
 }
 
-export const useCurrentUser = Env.isDebug ? debug_useStaticCurrentUser : useApiCurrentUser;
+export const useCurrentUser = env.isDebug ? debug_useStaticCurrentUser : useApiCurrentUser;

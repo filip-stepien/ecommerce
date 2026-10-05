@@ -1,14 +1,14 @@
 import { Outlet, Route, Routes } from 'react-router';
 import { Layout } from '@/components/Layout';
 import { AuthGuard } from '@/features/auth/components/AuthGuard';
-import { AppRoutes } from '@/lib/routes';
+import { appRoutes } from '@/lib/routes';
 import { AccountPage } from '@/pages/AccountPage';
 import { ProductsPage } from '@/pages/ProductsPage';
 
 export function Router() {
     return (
         <Routes>
-            <Route path={AppRoutes.home} element={<Layout />}>
+            <Route path={appRoutes.home} element={<Layout />}>
                 <Route index element={<ProductsPage />} />
                 <Route
                     element={
@@ -17,7 +17,7 @@ export function Router() {
                         </AuthGuard>
                     }
                 >
-                    <Route path={AppRoutes.account} element={<AccountPage />} />
+                    <Route path={appRoutes.account} element={<AccountPage />} />
                 </Route>
             </Route>
         </Routes>

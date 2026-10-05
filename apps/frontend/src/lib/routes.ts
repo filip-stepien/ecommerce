@@ -1,4 +1,4 @@
-export const AppRoutes = {
+export const appRoutes = {
     home: '/',
     account: '/account'
 } as const;

@@ -25,7 +25,7 @@ function bool(name: string): boolean {
     throw new EnvError(name, `must be "true" or "false", got "${String(raw)}"`);
 }
 
-export const Env = {
+export const env = {
     isDebug: bool('VITE_DEBUG'),
     oidcAuthority: str('VITE_OIDC_AUTHORITY'),
     oidcClientId: str('VITE_OIDC_CLIENT_ID')

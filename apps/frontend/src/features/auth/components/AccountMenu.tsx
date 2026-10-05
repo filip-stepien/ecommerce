@@ -3,7 +3,7 @@ import { UserRound } from 'lucide-react';
 import { Link } from 'react-router';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser';
-import { AppRoutes } from '@/lib/routes';
+import { appRoutes } from '@/lib/routes';
 
 const buttonClassName = 'flex items-center gap-2';
 const labelClassName = 'text-sm font-semibold';
@@ -36,7 +36,7 @@ export function AccountMenu() {
                 </UnstyledButton>
             </Menu.Target>
             <Menu.Dropdown>
-                <Menu.Item component={Link} to={AppRoutes.account}>
+                <Menu.Item component={Link} to={appRoutes.account}>
                     Moje konto
                 </Menu.Item>
                 <Menu.Item onClick={() => void signOut()}>Wyloguj się</Menu.Item>

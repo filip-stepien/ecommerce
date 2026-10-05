@@ -3,7 +3,7 @@ import { ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router';
 import { CategoryNav } from '@/components/CategoryNav';
 import { AccountMenu } from '@/features/auth/components/AccountMenu';
-import { AppRoutes } from '@/lib/routes';
+import { appRoutes } from '@/lib/routes';
 
 export function Header() {
     return (
@@ -12,7 +12,7 @@ export function Header() {
                 <Group className='h-22 justify-between'>
                     <Text
                         component={Link}
-                        to={AppRoutes.home}
+                        to={appRoutes.home}
                         className='text-[32px] leading-none font-bold'
                     >
                         E-sklep

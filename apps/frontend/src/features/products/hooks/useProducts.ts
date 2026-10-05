@@ -2,7 +2,7 @@ import { type RequestError, toRequestError } from '@/api/error';
 import { useGetProducts } from '@/api/generated';
 import type { Product } from '@/api/generated/model';
 import { debug_useQuery } from '@/hooks/debug_useQuery';
-import { Env } from '@/lib/env';
+import { env } from '@/lib/env';
 
 export type ProductFilters = {
     search: string;
@@ -90,4 +90,4 @@ function debug_useStaticProducts(query: ProductQuery): UseProductsResult {
     };
 }
 
-export const useProducts = Env.isDebug ? debug_useStaticProducts : useApiProducts;
+export const useProducts = env.isDebug ? debug_useStaticProducts : useApiProducts;
