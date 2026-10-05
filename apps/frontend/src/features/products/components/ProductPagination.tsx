@@ -7,7 +7,6 @@ type ProductPaginationProps = {
     pageSize: number;
     onPageChange: (page: number) => void;
     onPageSizeChange: (pageSize: number) => void;
-    disabled?: boolean;
 };
 
 export function ProductPagination({
@@ -15,8 +14,7 @@ export function ProductPagination({
     page,
     pageSize,
     onPageChange,
-    onPageSizeChange,
-    disabled
+    onPageSizeChange
 }: ProductPaginationProps) {
     const pageCount = Math.max(1, Math.ceil(total / pageSize));
 
@@ -31,7 +29,6 @@ export function ProductPagination({
                     value={String(pageSize)}
                     onChange={value => value && onPageSizeChange(Number(value))}
                     allowDeselect={false}
-                    disabled={disabled}
                 />
             </Group>
             <Pagination
@@ -40,7 +37,6 @@ export function ProductPagination({
                 value={page}
                 onChange={onPageChange}
                 withControls={false}
-                disabled={disabled}
             />
         </Group>
     );

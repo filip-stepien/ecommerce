@@ -26,7 +26,6 @@ export function ProductsPage() {
                     <ProductSearch
                         value={catalog.query.filters.search}
                         onChange={search => catalog.setFilters({ search })}
-                        disabled={catalog.isLoading}
                     />
                     <ProductGrid catalog={catalog} />
                 </Stack>

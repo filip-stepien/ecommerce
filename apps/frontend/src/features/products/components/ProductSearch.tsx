@@ -4,10 +4,9 @@ import { Search } from 'lucide-react';
 type ProductSearchProps = {
     value: string;
     onChange: (value: string) => void;
-    disabled?: boolean;
 };
 
-export function ProductSearch({ value, onChange, disabled }: ProductSearchProps) {
+export function ProductSearch({ value, onChange }: ProductSearchProps) {
     return (
         <TextInput
             aria-label='Szukaj produktów'
@@ -15,7 +14,6 @@ export function ProductSearch({ value, onChange, disabled }: ProductSearchProps)
             rightSection={<Search size={18} />}
             rightSectionPointerEvents='none'
             value={value}
-            disabled={disabled}
             onChange={event => onChange(event.currentTarget.value)}
         />
     );

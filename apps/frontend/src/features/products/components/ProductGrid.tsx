@@ -1,9 +1,8 @@
-import { Box, Group, SimpleGrid, Text } from '@mantine/core';
+import { Group, SimpleGrid, Text } from '@mantine/core';
 import type { PropsWithChildren } from 'react';
 import { QueryResult } from '@/components/QueryResult';
 import { ProductCard } from '@/features/products/components/ProductCard';
 import { ProductCardSkeleton } from '@/features/products/components/ProductCardSkeleton';
-import { ProductCount } from '@/features/products/components/ProductCount';
 import { ProductPagination } from '@/features/products/components/ProductPagination';
 import { ProductSortSelect } from '@/features/products/components/ProductSortSelect';
 import type { UseProductCatalogResult } from '@/features/products/hooks/useProductCatalog';
@@ -25,13 +24,8 @@ export function ProductGrid({ catalog }: ProductGridProps) {
 
     return (
         <>
-            <Group className='justify-between'>
-                {isLoading ? <Box /> : <ProductCount count={total} />}
-                <ProductSortSelect
-                    value={query.sort}
-                    onChange={catalog.setSort}
-                    disabled={isLoading}
-                />
+            <Group className='justify-end'>
+                <ProductSortSelect value={query.sort} onChange={catalog.setSort} />
             </Group>
             <QueryResult
                 data={products}
@@ -66,7 +60,6 @@ export function ProductGrid({ catalog }: ProductGridProps) {
                 pageSize={query.pageSize}
                 onPageChange={catalog.setPage}
                 onPageSizeChange={catalog.setPageSize}
-                disabled={isLoading}
             />
         </>
     );

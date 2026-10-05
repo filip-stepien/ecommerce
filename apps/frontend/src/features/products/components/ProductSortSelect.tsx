@@ -11,10 +11,9 @@ const sortOptions: { value: ProductSort; label: string }[] = [
 type ProductSortSelectProps = {
     value: ProductSort;
     onChange: (sort: ProductSort) => void;
-    disabled?: boolean;
 };
 
-export function ProductSortSelect({ value, onChange, disabled }: ProductSortSelectProps) {
+export function ProductSortSelect({ value, onChange }: ProductSortSelectProps) {
     return (
         <Group className='gap-3'>
             <Text className='text-sm text-dimmed'>Sortuj:</Text>
@@ -25,7 +24,6 @@ export function ProductSortSelect({ value, onChange, disabled }: ProductSortSele
                 value={value}
                 onChange={sort => sort && onChange(sort as ProductSort)}
                 allowDeselect={false}
-                disabled={disabled}
             />
         </Group>
     );

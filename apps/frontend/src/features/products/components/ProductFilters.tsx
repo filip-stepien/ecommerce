@@ -23,9 +23,8 @@ type ProductFiltersProps = {
 };
 
 export function ProductFilters({ values, onChange, onClear }: ProductFiltersProps) {
-    const { categories, isLoading: areCategoriesLoading } = useProductCategories();
-    const { connectivityOptions, brands, isLoading: areOptionsLoading } = useProductFilterOptions();
-    const isLoading = areCategoriesLoading || areOptionsLoading;
+    const { categories } = useProductCategories();
+    const { connectivityOptions, brands } = useProductFilterOptions();
 
     return (
         <Paper withBorder className='w-full shrink-0 rounded-xl p-5 md:w-65'>
@@ -42,7 +41,6 @@ export function ProductFilters({ values, onChange, onClear }: ProductFiltersProp
                     data={categories}
                     value={values.category}
                     onChange={category => onChange({ category })}
-                    disabled={isLoading}
                     clearable
                 />
                 <Select
@@ -51,7 +49,6 @@ export function ProductFilters({ values, onChange, onClear }: ProductFiltersProp
                     data={connectivityOptions}
                     value={values.connectivity}
                     onChange={connectivity => onChange({ connectivity })}
-                    disabled={isLoading}
                     clearable
                 />
                 <Select
@@ -60,7 +57,6 @@ export function ProductFilters({ values, onChange, onClear }: ProductFiltersProp
                     data={brands}
                     value={values.brand}
                     onChange={brand => onChange({ brand })}
-                    disabled={isLoading}
                     clearable
                 />
                 <InputWrapper label='Cena (zł)'>
@@ -71,7 +67,6 @@ export function ProductFilters({ values, onChange, onClear }: ProductFiltersProp
                             min={0}
                             thousandSeparator=' '
                             hideControls
-                            disabled={isLoading}
                             value={values.minPrice ?? ''}
                             onChange={value => onChange({ minPrice: toNumber(value) })}
                         />
@@ -81,7 +76,6 @@ export function ProductFilters({ values, onChange, onClear }: ProductFiltersProp
                             min={0}
                             thousandSeparator=' '
                             hideControls
-                            disabled={isLoading}
                             value={values.maxPrice ?? ''}
                             onChange={value => onChange({ maxPrice: toNumber(value) })}
                         />
@@ -91,7 +85,6 @@ export function ProductFilters({ values, onChange, onClear }: ProductFiltersProp
                 <Text className='text-sm font-semibold'>Dostępność</Text>
                 <Checkbox
                     label='Tylko dostępne'
-                    disabled={isLoading}
                     checked={values.onlyAvailable}
                     onChange={event => onChange({ onlyAvailable: event.currentTarget.checked })}
                 />
