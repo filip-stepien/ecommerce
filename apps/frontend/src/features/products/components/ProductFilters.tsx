@@ -24,7 +24,8 @@ type ProductFiltersProps = {
 
 export function ProductFilters({ values, onChange, onClear }: ProductFiltersProps) {
     const { categories, isLoading: areCategoriesLoading } = useProductCategories();
-    const { connectivityOptions, brands, isLoading } = useProductFilterOptions();
+    const { connectivityOptions, brands, isLoading: areOptionsLoading } = useProductFilterOptions();
+    const isLoading = areCategoriesLoading || areOptionsLoading;
 
     return (
         <Paper withBorder className='w-full shrink-0 rounded-xl p-5 md:w-65'>
@@ -41,7 +42,7 @@ export function ProductFilters({ values, onChange, onClear }: ProductFiltersProp
                     data={categories}
                     value={values.category}
                     onChange={category => onChange({ category })}
-                    disabled={areCategoriesLoading}
+                    disabled={isLoading}
                     clearable
                 />
                 <Select
@@ -70,6 +71,7 @@ export function ProductFilters({ values, onChange, onClear }: ProductFiltersProp
                             min={0}
                             thousandSeparator=' '
                             hideControls
+                            disabled={isLoading}
                             value={values.minPrice ?? ''}
                             onChange={value => onChange({ minPrice: toNumber(value) })}
                         />
@@ -79,6 +81,7 @@ export function ProductFilters({ values, onChange, onClear }: ProductFiltersProp
                             min={0}
                             thousandSeparator=' '
                             hideControls
+                            disabled={isLoading}
                             value={values.maxPrice ?? ''}
                             onChange={value => onChange({ maxPrice: toNumber(value) })}
                         />
@@ -88,6 +91,7 @@ export function ProductFilters({ values, onChange, onClear }: ProductFiltersProp
                 <Text className='text-sm font-semibold'>Dostępność</Text>
                 <Checkbox
                     label='Tylko dostępne'
+                    disabled={isLoading}
                     checked={values.onlyAvailable}
                     onChange={event => onChange({ onlyAvailable: event.currentTarget.checked })}
                 />
