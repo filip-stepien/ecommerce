@@ -2,16 +2,13 @@ import { Menu, Text, UnstyledButton } from '@mantine/core';
 import { UserRound } from 'lucide-react';
 import { Link } from 'react-router';
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser';
 import { appRoutes } from '@/lib/routes';
 
 const buttonClassName = 'flex items-center gap-2';
-const iconClassName = 'text-icon';
 const labelClassName = 'text-sm font-semibold';
 
 export function AccountMenu() {
     const { isAuthenticated, isLoading, signIn, signOut } = useAuth();
-    const { user } = useCurrentUser();
 
     if (!isAuthenticated) {
         return (
@@ -20,7 +17,7 @@ export function AccountMenu() {
                 disabled={isLoading}
                 onClick={() => void signIn()}
             >
-                <UserRound size={20} className={iconClassName} />
+                <UserRound size={20} />
                 <Text className={labelClassName}>Zaloguj się</Text>
             </UnstyledButton>
         );
@@ -30,10 +27,8 @@ export function AccountMenu() {
         <Menu position='bottom-end'>
             <Menu.Target>
                 <UnstyledButton className={buttonClassName}>
-                    <UserRound size={20} className={iconClassName} />
-                    <Text className={labelClassName}>
-                        {user ? `Cześć, ${user.username}` : 'Moje konto'}
-                    </Text>
+                    <UserRound size={20} />
+                    <Text className={labelClassName}>Moje konto</Text>
                 </UnstyledButton>
             </Menu.Target>
             <Menu.Dropdown>
