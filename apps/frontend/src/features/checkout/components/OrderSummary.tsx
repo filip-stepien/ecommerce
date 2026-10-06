@@ -3,7 +3,6 @@ import type { DeliveryMethod } from '@/features/checkout/hooks/useCheckoutOption
 import { formatPrice } from '@/lib/format';
 
 type OrderSummaryProps = {
-    itemCount: number;
     productsTotal: number;
     deliveryMethod: DeliveryMethod | undefined;
     vatRate: number;
@@ -11,7 +10,6 @@ type OrderSummaryProps = {
 };
 
 export function OrderSummary({
-    itemCount,
     productsTotal,
     deliveryMethod,
     vatRate,
@@ -27,9 +25,7 @@ export function OrderSummary({
                     Podsumowanie
                 </Title>
                 <Stack className='gap-0'>
-                    <Text className='text-sm leading-loose text-dimmed'>
-                        Produkty ({itemCount} szt.)
-                    </Text>
+                    <Text className='text-sm leading-loose text-dimmed'>Produkty</Text>
                     <Text className='text-sm leading-loose font-semibold'>
                         {formatPrice(productsTotal)}
                     </Text>

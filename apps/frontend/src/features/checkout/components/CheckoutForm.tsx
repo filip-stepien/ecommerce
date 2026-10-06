@@ -18,7 +18,7 @@ type CheckoutFormProps = {
 };
 
 export function CheckoutForm({ options, onOrderPlaced }: CheckoutFormProps) {
-    const { items, itemCount, total } = useCart();
+    const { items, total } = useCart();
     const form = useCheckoutForm(options);
     const { placeOrder, isPending } = usePlaceOrder();
     const deliveryMethod = options.deliveryMethods.find(
@@ -47,7 +47,6 @@ export function CheckoutForm({ options, onOrderPlaced }: CheckoutFormProps) {
             <Stack className='w-full shrink-0 gap-5 lg:w-100'>
                 <OrderItems items={items} />
                 <OrderSummary
-                    itemCount={itemCount}
                     productsTotal={total}
                     deliveryMethod={deliveryMethod}
                     vatRate={options.vatRate}
