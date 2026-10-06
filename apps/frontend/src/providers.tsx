@@ -4,6 +4,7 @@ import type { PropsWithChildren } from 'react';
 import { BrowserRouter, useNavigate } from 'react-router';
 import { queryClient } from '@/api/queryClient';
 import { AuthProvider } from '@/features/auth/providers/AuthProvider';
+import { CartProvider } from '@/features/cart/providers/CartProvider';
 import { theme } from '@/theme';
 
 function RoutedAuthProvider({ children }: PropsWithChildren) {
@@ -21,7 +22,9 @@ export function Providers({ children }: PropsWithChildren) {
         <MantineProvider theme={theme} defaultColorScheme='light'>
             <QueryClientProvider client={queryClient}>
                 <BrowserRouter>
-                    <RoutedAuthProvider>{children}</RoutedAuthProvider>
+                    <RoutedAuthProvider>
+                        <CartProvider>{children}</CartProvider>
+                    </RoutedAuthProvider>
                 </BrowserRouter>
             </QueryClientProvider>
         </MantineProvider>

@@ -5,7 +5,7 @@ export function AccountPage() {
     const { user, isLoading, error } = useCurrentUser();
 
     return (
-        <section>
+        <section className='mt-8 border-t border-(--border) pt-4'>
             <h2>Moje konto</h2>
             <QueryResult
                 data={user}

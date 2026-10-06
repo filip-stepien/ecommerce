@@ -1,5 +1,6 @@
 import { Button, Divider, Group, NumberInput, Stack, Text, Title } from '@mantine/core';
 import { useState } from 'react';
+import { useCart } from '@/features/cart/hooks/useCart';
 import type { ProductDetails } from '@/features/products/hooks/useProductDetails';
 import { formatPrice } from '@/lib/format';
 
@@ -8,6 +9,7 @@ type ProductPurchaseInfoProps = {
 };
 
 export function ProductPurchaseInfo({ product }: ProductPurchaseInfoProps) {
+    const { addItem } = useCart();
     const [quantity, setQuantity] = useState<number>(1);
 
     return (
@@ -31,7 +33,17 @@ export function ProductPurchaseInfo({ product }: ProductPurchaseInfoProps) {
                     value={quantity}
                     onChange={value => setQuantity(Number(value))}
                 />
-                <Button size='md'>Dodaj do koszyka</Button>
+                <Button
+                    size='md'
+                    onClick={() =>
+                        addItem(product, {
+                            quantity,
+                            image: product.images[0]
+                        })
+                    }
+                >
+                    Dodaj do koszyka
+                </Button>
             </Group>
         </Stack>
     );

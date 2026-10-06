@@ -2,6 +2,7 @@ import { Button, Center, Paper, Stack, Text, UnstyledButton } from '@mantine/cor
 import { Package } from 'lucide-react';
 import { Link, generatePath } from 'react-router';
 import type { Product } from '@/api/generated/model';
+import { useCart } from '@/features/cart/hooks/useCart';
 import { formatPrice } from '@/lib/format';
 import { appRoutes } from '@/lib/routes';
 
@@ -10,6 +11,8 @@ type ProductCardProps = {
 };
 
 export function ProductCard({ product }: ProductCardProps) {
+    const { addItem } = useCart();
+
     return (
         <Paper withBorder shadow='xs' className='rounded-lg p-[23px]'>
             <Stack className='gap-[17px]'>
@@ -26,7 +29,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 <Text className='text-[22px] leading-[1.6] font-bold'>
                     {formatPrice(product.price)}
                 </Text>
-                <Button size='md' className='self-start'>
+                <Button size='md' className='self-start' onClick={() => addItem(product)}>
                     Dodaj do koszyka
                 </Button>
             </Stack>

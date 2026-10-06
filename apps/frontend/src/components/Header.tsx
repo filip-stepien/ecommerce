@@ -1,7 +1,8 @@
 import { ActionIcon, Anchor, Box, Container, Group, Text } from '@mantine/core';
-import { Heart, ShoppingBag } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { Link } from 'react-router';
 import { AccountMenu } from '@/features/auth/components/AccountMenu';
+import { CartButton } from '@/features/cart/components/CartButton';
 import { ProductSearch } from '@/features/products/components/ProductSearch';
 import {
     getCatalogPath,
@@ -96,10 +97,7 @@ export function Header() {
                             <Heart size={20} />
                         </ActionIcon>
                         <AccountMenu />
-                        <Group className='gap-2'>
-                            <ShoppingBag size={20} />
-                            <Text className='text-sm font-semibold'>Koszyk</Text>
-                        </Group>
+                        <CartButton />
                     </Group>
                 </Group>
             </Container>

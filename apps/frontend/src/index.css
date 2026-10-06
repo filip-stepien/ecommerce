@@ -41,7 +41,6 @@
             sans-serif;
         color: var(--text);
         background: var(--bg);
-        scrollbar-gutter: stable;
     }
 
     :root[data-mantine-color-scheme='dark'] {
@@ -54,12 +53,6 @@
 
     body {
         margin: 0;
-    }
-
-    section {
-        margin-top: 2rem;
-        padding-top: 1rem;
-        border-top: 1px solid var(--border);
     }
 }
 

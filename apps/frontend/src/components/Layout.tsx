@@ -3,6 +3,7 @@ import { Outlet } from 'react-router';
 import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { CartDrawer } from '@/features/cart/components/CartDrawer';
 import { useScrollToTop } from '@/hooks/useScrollToTop';
 
 export function Layout() {
@@ -23,6 +24,7 @@ export function Layout() {
                 </Container>
             </Box>
             <Footer />
+            <CartDrawer />
         </Box>
     );
 }
