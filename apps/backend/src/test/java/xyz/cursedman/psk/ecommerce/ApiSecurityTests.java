@@ -26,7 +26,7 @@ class ApiSecurityTests {
 	void productsArePublic() throws Exception {
 		mockMvc.perform(get("/api/products"))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$[0].name").exists());
+			.andExpect(jsonPath("$.products[0].name").exists());
 	}
 
 	@Test

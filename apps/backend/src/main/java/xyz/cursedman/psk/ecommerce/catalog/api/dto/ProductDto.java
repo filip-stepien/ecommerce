@@ -9,5 +9,6 @@ import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 public record ProductDto(
 	@Schema(requiredMode = RequiredMode.REQUIRED) long id,
 	@Schema(requiredMode = RequiredMode.REQUIRED) String name,
-	@Schema(requiredMode = RequiredMode.REQUIRED) BigDecimal price) {
+	@Schema(requiredMode = RequiredMode.REQUIRED) BigDecimal price,
+	@Schema(description = "First product image, if any") String imageUrl) {
 }
