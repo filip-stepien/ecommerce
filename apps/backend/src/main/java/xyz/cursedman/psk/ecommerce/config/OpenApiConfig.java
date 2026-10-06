@@ -1,4 +1,4 @@
-package com.ecommerce.backend.config;
+package xyz.cursedman.psk.ecommerce.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;

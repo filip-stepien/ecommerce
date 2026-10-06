@@ -1,4 +1,4 @@
-package com.ecommerce.backend.product;
+package xyz.cursedman.psk.ecommerce.product;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

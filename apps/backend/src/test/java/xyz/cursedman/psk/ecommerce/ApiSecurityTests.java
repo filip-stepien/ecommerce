@@ -1,4 +1,4 @@
-package com.ecommerce.backend;
+package xyz.cursedman.psk.ecommerce;
 
 import org.junit.jupiter.api.Test;
 

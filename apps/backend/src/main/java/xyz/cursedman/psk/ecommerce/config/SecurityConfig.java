@@ -1,4 +1,4 @@
-package com.ecommerce.backend.config;
+package xyz.cursedman.psk.ecommerce.config;
 
 import java.util.Collection;
 import java.util.List;

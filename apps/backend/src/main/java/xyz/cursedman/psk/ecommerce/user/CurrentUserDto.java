@@ -1,4 +1,4 @@
-package com.ecommerce.backend.user;
+package xyz.cursedman.psk.ecommerce.user;
 
 import java.util.List;
 

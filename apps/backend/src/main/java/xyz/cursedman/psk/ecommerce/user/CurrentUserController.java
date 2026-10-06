@@ -1,8 +1,8 @@
-package com.ecommerce.backend.user;
+package xyz.cursedman.psk.ecommerce.user;
 
 import java.util.List;
 
-import com.ecommerce.backend.config.OpenApiConfig;
+import xyz.cursedman.psk.ecommerce.config.OpenApiConfig;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
