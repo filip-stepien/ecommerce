@@ -17,6 +17,7 @@ import xyz.cursedman.psk.ecommerce.config.OpenApiConfig;
 @RequestMapping("/api/me")
 @Tag(name = "users")
 @SecurityRequirement(name = OpenApiConfig.BEARER_AUTH)
+@SecurityRequirement(name = OpenApiConfig.KEYCLOAK_AUTH)
 public class CurrentUserController {
 
 	private static final String ROLE_PREFIX = "ROLE_";

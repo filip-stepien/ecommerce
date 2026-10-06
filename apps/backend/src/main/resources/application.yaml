@@ -19,3 +19,8 @@ spring:
 springdoc:
   default-produces-media-type: application/json
   writer-with-default-pretty-printer: true
+  swagger-ui:
+    oauth:
+      client-id: ecommerce-frontend
+      use-pkce-with-authorization-code-grant: true
+      scopes: openid profile email
