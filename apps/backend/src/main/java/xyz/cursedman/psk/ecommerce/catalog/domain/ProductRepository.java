@@ -1,4 +1,4 @@
-package xyz.cursedman.psk.ecommerce.product;
+package xyz.cursedman.psk.ecommerce.catalog.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

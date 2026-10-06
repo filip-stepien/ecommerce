@@ -1,4 +1,4 @@
-package xyz.cursedman.psk.ecommerce.product;
+package xyz.cursedman.psk.ecommerce.catalog.api.dto;
 
 import java.math.BigDecimal;
 

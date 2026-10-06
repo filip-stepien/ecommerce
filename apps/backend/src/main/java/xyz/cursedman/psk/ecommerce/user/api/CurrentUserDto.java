@@ -1,4 +1,4 @@
-package xyz.cursedman.psk.ecommerce.user;
+package xyz.cursedman.psk.ecommerce.user.api;
 
 import java.util.List;
 

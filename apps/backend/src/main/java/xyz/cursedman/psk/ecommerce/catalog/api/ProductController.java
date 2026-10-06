@@ -1,4 +1,4 @@
-package xyz.cursedman.psk.ecommerce.product;
+package xyz.cursedman.psk.ecommerce.catalog.api;
 
 import java.util.List;
 
@@ -8,6 +8,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import xyz.cursedman.psk.ecommerce.catalog.api.dto.ProductDto;
+import xyz.cursedman.psk.ecommerce.catalog.domain.ProductRepository;
 
 @RestController
 @RequestMapping("/api/products")

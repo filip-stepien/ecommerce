@@ -1,8 +1,7 @@
-package xyz.cursedman.psk.ecommerce.user;
+package xyz.cursedman.psk.ecommerce.user.api;
 
 import java.util.List;
 
-import xyz.cursedman.psk.ecommerce.config.OpenApiConfig;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -11,6 +10,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import xyz.cursedman.psk.ecommerce.config.OpenApiConfig;
 
 @RestController
 @RequestMapping("/api/me")
