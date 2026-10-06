@@ -1,4 +1,5 @@
 import { MantineProvider } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
 import { QueryClientProvider } from '@tanstack/react-query';
 import type { PropsWithChildren } from 'react';
 import { BrowserRouter, useNavigate } from 'react-router';
@@ -20,6 +21,7 @@ function RoutedAuthProvider({ children }: PropsWithChildren) {
 export function Providers({ children }: PropsWithChildren) {
     return (
         <MantineProvider theme={theme} defaultColorScheme='light'>
+            <Notifications position='bottom-right' autoClose={2500} />
             <QueryClientProvider client={queryClient}>
                 <BrowserRouter>
                     <RoutedAuthProvider>

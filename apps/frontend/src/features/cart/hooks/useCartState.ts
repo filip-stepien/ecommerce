@@ -1,4 +1,5 @@
 import { useDisclosure, useLocalStorage } from '@mantine/hooks';
+import { notifications } from '@mantine/notifications';
 import type { Product } from '@/api/generated/model';
 import type { AddCartItemOptions, CartContextValue, CartItem } from '@/features/cart/contexts/cart';
 
@@ -12,6 +13,8 @@ export function useCartState(): CartContextValue {
 
     function addItem(product: Product, { quantity = 1, image = null }: AddCartItemOptions = {}) {
         const existing = items.find(item => item.id === product.id);
+
+        notifications.show({ title: 'Dodano do koszyka', message: product.name });
 
         if (existing) {
             setQuantity(existing.id, existing.quantity + quantity);
