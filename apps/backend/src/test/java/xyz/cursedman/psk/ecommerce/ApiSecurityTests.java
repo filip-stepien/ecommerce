@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,6 +35,19 @@ class ApiSecurityTests {
 	void checkoutOptionsArePublic() throws Exception {
 		mockMvc.perform(get("/api/checkout/options"))
 			.andExpect(status().isOk());
+	}
+
+	@Test
+	void placingOrderRequiresToken() throws Exception {
+		mockMvc.perform(post("/api/orders").contentType(MediaType.APPLICATION_JSON).content("{}"))
+			.andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	void placingOrderRequiresUserRole() throws Exception {
+		mockMvc.perform(post("/api/orders").with(jwt())
+				.contentType(MediaType.APPLICATION_JSON).content("{}"))
+			.andExpect(status().isForbidden());
 	}
 
 	@Test
