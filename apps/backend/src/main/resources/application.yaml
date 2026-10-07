@@ -27,3 +27,10 @@ springdoc:
       client-id: ecommerce-frontend
       use-pkce-with-authorization-code-grant: true
       scopes: openid profile email
+
+shop:
+  payments:
+    # fake: settles payments immediately; set shop.payments.fake.decline=true to test declines
+    provider: fake
+    fake:
+      decline: false
