@@ -92,6 +92,15 @@ class ProductApiTests {
 	}
 
 	@Test
+	void recommendsOnlyAvailableProducts() throws Exception {
+		mockMvc.perform(get("/api/products/recommended"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.length()").value(8))
+			.andExpect(jsonPath("$[*].id", not(hasItem(4))))
+			.andExpect(jsonPath("$[*].id", not(hasItem(11))));
+	}
+
+	@Test
 	void returnsCategoriesAndFilterOptions() throws Exception {
 		mockMvc.perform(get("/api/products/categories"))
 			.andExpect(status().isOk())
