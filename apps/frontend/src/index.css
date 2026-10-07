@@ -61,19 +61,4 @@
         font-family: ui-monospace, Consolas, monospace;
         font-size: 0.8125rem;
     }
-
-    .user {
-        display: grid;
-        grid-template-columns: max-content 1fr;
-        gap: 0.25rem 1rem;
-        margin: 0;
-    }
-
-    .user dt {
-        font-weight: 600;
-    }
-
-    .user dd {
-        margin: 0;
-    }
 }
