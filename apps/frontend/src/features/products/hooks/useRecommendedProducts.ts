@@ -1,6 +1,8 @@
-import type { RequestError } from '@/api/error';
+import { type RequestError, toRequestError } from '@/api/error';
+import { useGetRecommendedProducts } from '@/api/generated';
 import type { Product } from '@/api/generated/model';
 import { debug_useQuery } from '@/hooks/debug_useQuery';
+import { env } from '@/lib/env';
 
 export type UseRecommendedProductsResult = {
     products: Product[];
@@ -8,11 +10,36 @@ export type UseRecommendedProductsResult = {
     error: RequestError | null;
 };
 
-function debug_useStaticRecommendedProducts(): UseRecommendedProductsResult {
+function useApiRecommendedProducts(limit?: number): UseRecommendedProductsResult {
+    const { data, isLoading, error } = useGetRecommendedProducts({ limit });
+
+    return {
+        products: data ?? [],
+        isLoading,
+        error: toRequestError(error)
+    };
+}
+
+function debug_useStaticRecommendedProducts(limit?: number): UseRecommendedProductsResult {
     const { data, isLoading } = debug_useQuery<Product[]>([
-        { id: 101, name: 'Apple AirPods Pro 2', price: 1099 },
-        { id: 102, name: 'Razer DeathAdder V3', price: 349 },
-        { id: 103, name: 'Keychron K2', price: 449 },
+        {
+            id: 101,
+            name: 'Logitech MX Master 3S',
+            price: 449,
+            imageUrl: '/products/logitech-mx-master-3s.jpg'
+        },
+        {
+            id: 102,
+            name: 'Anker Nano 65W',
+            price: 149,
+            imageUrl: '/products/anker-nano-65w.jpg'
+        },
+        {
+            id: 103,
+            name: 'Sony WH-1000XM5',
+            price: 1299,
+            imageUrl: '/products/sony-wh-1000xm5.jpg'
+        },
         { id: 104, name: 'Anker PowerCore 20000', price: 199 },
         { id: 105, name: 'Logitech MX Keys S', price: 499 },
         { id: 106, name: 'Samsung T7 1TB', price: 459 },
@@ -21,10 +48,12 @@ function debug_useStaticRecommendedProducts(): UseRecommendedProductsResult {
     ]);
 
     return {
-        products: data ?? [],
+        products: data?.slice(0, limit) ?? [],
         isLoading,
         error: null
     };
 }
 
-export { debug_useStaticRecommendedProducts as useRecommendedProducts };
+export const useRecommendedProducts = env.isDebug
+    ? debug_useStaticRecommendedProducts
+    : useApiRecommendedProducts;
