@@ -5,10 +5,7 @@
  * OpenAPI spec version: v1
  */
 
-export interface Product {
-  id: number;
+export interface ProductSpecification {
   name: string;
-  price: number;
-  /** First product image, if any */
-  imageUrl?: string;
+  value: string;
 }

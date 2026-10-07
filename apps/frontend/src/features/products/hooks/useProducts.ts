@@ -1,6 +1,6 @@
 import { type RequestError, toRequestError } from '@/api/error';
 import { useGetProducts } from '@/api/generated';
-import type { Product } from '@/api/generated/model';
+import type { GetProductsParams, Product } from '@/api/generated/model';
 import { debug_useQuery } from '@/hooks/debug_useQuery';
 import { env } from '@/lib/env';
 
@@ -30,12 +30,27 @@ export type UseProductsResult = {
     error: RequestError | null;
 };
 
-function useApiProducts(_query: ProductQuery): UseProductsResult {
-    const { data, isLoading, error } = useGetProducts();
+function toProductsParams({ filters, sort, page, pageSize }: ProductQuery): GetProductsParams {
+    return {
+        search: filters.search.trim() || undefined,
+        category: filters.category ?? undefined,
+        connectivity: filters.connectivity ?? undefined,
+        brand: filters.brand ?? undefined,
+        minPrice: filters.minPrice ?? undefined,
+        maxPrice: filters.maxPrice ?? undefined,
+        onlyAvailable: filters.onlyAvailable || undefined,
+        sort,
+        page,
+        pageSize
+    };
+}
+
+function useApiProducts(query: ProductQuery): UseProductsResult {
+    const { data, isLoading, error } = useGetProducts(toProductsParams(query));
 
     return {
-        products: data ?? [],
-        total: data?.length ?? 0,
+        products: data?.products ?? [],
+        total: data?.total ?? 0,
         isLoading,
         error: toRequestError(error)
     };
