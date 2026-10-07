@@ -13,7 +13,6 @@ export function Router() {
             <Route path={appRoutes.home} element={<Layout />}>
                 <Route index element={<ProductsPage />} />
                 <Route path={appRoutes.product} element={<ProductDetailsPage />} />
-                <Route path={appRoutes.checkout} element={<CheckoutPage />} />
                 <Route
                     element={
                         <AuthGuard>
@@ -22,6 +21,7 @@ export function Router() {
                     }
                 >
                     <Route path={appRoutes.account} element={<AccountPage />} />
+                    <Route path={appRoutes.checkout} element={<CheckoutPage />} />
                 </Route>
             </Route>
         </Routes>
