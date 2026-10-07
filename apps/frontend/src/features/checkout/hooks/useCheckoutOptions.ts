@@ -1,5 +1,7 @@
-import type { RequestError } from '@/api/error';
+import { type RequestError, toRequestError } from '@/api/error';
+import { useGetCheckoutOptions } from '@/api/generated';
 import { debug_useQuery } from '@/hooks/debug_useQuery';
+import { env } from '@/lib/env';
 
 export type DeliveryMethod = {
     id: string;
@@ -24,6 +26,16 @@ export type UseCheckoutOptionsResult = {
     error: RequestError | null;
 };
 
+function useApiCheckoutOptions(): UseCheckoutOptionsResult {
+    const { data, isLoading, error } = useGetCheckoutOptions();
+
+    return {
+        options: data ?? null,
+        isLoading,
+        error: toRequestError(error)
+    };
+}
+
 function debug_useStaticCheckoutOptions(): UseCheckoutOptionsResult {
     const { data, isLoading } = debug_useQuery<CheckoutOptions>({
         deliveryMethods: [
@@ -44,4 +56,6 @@ function debug_useStaticCheckoutOptions(): UseCheckoutOptionsResult {
     };
 }
 
-export { debug_useStaticCheckoutOptions as useCheckoutOptions };
+export const useCheckoutOptions = env.isDebug
+    ? debug_useStaticCheckoutOptions
+    : useApiCheckoutOptions;
