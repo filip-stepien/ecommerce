@@ -8,10 +8,198 @@
     "url" : "/"
   } ],
   "paths" : {
+    "/api/orders" : {
+      "post" : {
+        "tags" : [ "orders" ],
+        "summary" : "Place an order and start its payment",
+        "description" : "Prices come from the catalog, not from the client. A declined payment still creates the order, with status PAYMENT_FAILED.",
+        "operationId" : "placeOrder",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/PlaceOrderRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PlaceOrderResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        }, {
+          "keycloak" : [ ]
+        } ]
+      }
+    },
     "/api/products" : {
       "get" : {
         "tags" : [ "products" ],
         "operationId" : "getProducts",
+        "parameters" : [ {
+          "name" : "search",
+          "in" : "query",
+          "description" : "Case-insensitive fragment of the product name",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "description" : "Case-insensitive fragment of the product name"
+          }
+        }, {
+          "name" : "category",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "brand",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "connectivity",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "minPrice",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "number",
+            "minimum" : 0
+          }
+        }, {
+          "name" : "maxPrice",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "number",
+            "minimum" : 0
+          }
+        }, {
+          "name" : "onlyAvailable",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "default",
+            "enum" : [ "default", "priceAsc", "priceDesc", "nameAsc" ]
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "1-based page number",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 1,
+            "description" : "1-based page number",
+            "minimum" : 1
+          }
+        }, {
+          "name" : "pageSize",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 12,
+            "maximum" : 100,
+            "minimum" : 1
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProductPage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products/{id}" : {
+      "get" : {
+        "tags" : [ "products" ],
+        "operationId" : "getProduct",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProductDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products/{id}/related" : {
+      "get" : {
+        "tags" : [ "products" ],
+        "operationId" : "getRelatedProducts",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Maximum number of products",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 6,
+            "maximum" : 24,
+            "minimum" : 1
+          }
+        } ],
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -21,6 +209,86 @@
                   "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/Product"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products/recommended" : {
+      "get" : {
+        "tags" : [ "products" ],
+        "summary" : "Products recommended for the caller",
+        "description" : "Public. With a token, products matching the customer's purchases come first; the rest are best-sellers and then the newest products.",
+        "operationId" : "getRecommendedProducts",
+        "parameters" : [ {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Maximum number of products",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 8,
+            "maximum" : 24,
+            "minimum" : 1
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/Product"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        }, {
+          "keycloak" : [ ]
+        } ]
+      }
+    },
+    "/api/products/filter-options" : {
+      "get" : {
+        "tags" : [ "products" ],
+        "operationId" : "getProductFilterOptions",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProductFilterOptions"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products/categories" : {
+      "get" : {
+        "tags" : [ "products" ],
+        "operationId" : "getProductCategories",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
                   }
                 }
               }
@@ -47,12 +315,184 @@
         },
         "security" : [ {
           "bearerAuth" : [ ]
+        }, {
+          "keycloak" : [ ]
         } ]
+      }
+    },
+    "/api/checkout/options" : {
+      "get" : {
+        "tags" : [ "checkout" ],
+        "operationId" : "getCheckoutOptions",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CheckoutOptions"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
   "components" : {
     "schemas" : {
+      "Address" : {
+        "type" : "object",
+        "properties" : {
+          "street" : {
+            "type" : "string",
+            "minLength" : 1
+          },
+          "houseNumber" : {
+            "type" : "string",
+            "minLength" : 1
+          },
+          "postalCode" : {
+            "type" : "string",
+            "minLength" : 1
+          },
+          "city" : {
+            "type" : "string",
+            "minLength" : 1
+          },
+          "country" : {
+            "type" : "string",
+            "minLength" : 1
+          }
+        },
+        "required" : [ "city", "country", "houseNumber", "postalCode", "street" ]
+      },
+      "Contact" : {
+        "type" : "object",
+        "properties" : {
+          "firstName" : {
+            "type" : "string",
+            "minLength" : 1
+          },
+          "lastName" : {
+            "type" : "string",
+            "minLength" : 1
+          },
+          "email" : {
+            "type" : "string",
+            "format" : "email",
+            "minLength" : 1
+          },
+          "phone" : {
+            "type" : "string",
+            "minLength" : 1,
+            "pattern" : "^\\+?[\\d\\s-]{9,}$"
+          }
+        },
+        "required" : [ "email", "firstName", "lastName", "phone" ]
+      },
+      "Invoice" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "minLength" : 1
+          },
+          "taxId" : {
+            "type" : "string",
+            "description" : "Polish NIP, 10 digits, optionally dash-separated",
+            "pattern" : "^(\\d{3}-?\\d{3}-?\\d{2}-?\\d{2})?$"
+          },
+          "address" : {
+            "$ref" : "#/components/schemas/Address"
+          }
+        },
+        "required" : [ "address", "name" ]
+      },
+      "OrderDetails" : {
+        "type" : "object",
+        "properties" : {
+          "contact" : {
+            "$ref" : "#/components/schemas/Contact"
+          },
+          "address" : {
+            "$ref" : "#/components/schemas/Address"
+          },
+          "isInvoiceSameAsDelivery" : {
+            "type" : "boolean"
+          },
+          "invoice" : {
+            "$ref" : "#/components/schemas/Invoice",
+            "description" : "Validated and used only when isInvoiceSameAsDelivery is false"
+          },
+          "deliveryMethod" : {
+            "type" : "string",
+            "minLength" : 1
+          },
+          "paymentMethod" : {
+            "type" : "string",
+            "enum" : [ "blik", "card" ]
+          }
+        },
+        "required" : [ "address", "contact", "deliveryMethod", "isInvoiceSameAsDelivery", "paymentMethod" ]
+      },
+      "OrderItem" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "Product id"
+          },
+          "quantity" : {
+            "type" : "integer",
+            "format" : "int32",
+            "exclusiveMinimum" : 0,
+            "maximum" : 999
+          }
+        },
+        "required" : [ "id", "quantity" ]
+      },
+      "PlaceOrderRequest" : {
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/OrderItem"
+            },
+            "minItems" : 1
+          },
+          "details" : {
+            "$ref" : "#/components/schemas/OrderDetails"
+          }
+        },
+        "required" : [ "details", "items" ]
+      },
+      "PlaceOrderResponse" : {
+        "type" : "object",
+        "properties" : {
+          "orderId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "status" : {
+            "type" : "string",
+            "enum" : [ "PENDING_PAYMENT", "PAID", "PAYMENT_FAILED" ]
+          },
+          "total" : {
+            "type" : "number"
+          },
+          "currency" : {
+            "type" : "string"
+          },
+          "clientSecret" : {
+            "type" : "string",
+            "description" : "Present when the payment provider needs the client to complete the payment"
+          }
+        },
+        "required" : [ "currency", "orderId", "status", "total" ]
+      },
       "Product" : {
         "type" : "object",
         "properties" : {
@@ -65,9 +505,110 @@
           },
           "price" : {
             "type" : "number"
+          },
+          "imageUrl" : {
+            "type" : "string",
+            "description" : "First product image, if any"
           }
         },
         "required" : [ "id", "name", "price" ]
+      },
+      "ProductPage" : {
+        "type" : "object",
+        "properties" : {
+          "products" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Product"
+            }
+          },
+          "total" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "Number of products matching the filters"
+          }
+        },
+        "required" : [ "products", "total" ]
+      },
+      "ProductDetails" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "subtitle" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "brand" : {
+            "type" : "string"
+          },
+          "category" : {
+            "type" : "string"
+          },
+          "price" : {
+            "type" : "number"
+          },
+          "stock" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "connectivity" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "images" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "specifications" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProductSpecification"
+            }
+          }
+        },
+        "required" : [ "brand", "category", "connectivity", "id", "images", "name", "price", "specifications", "stock" ]
+      },
+      "ProductSpecification" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "name", "value" ]
+      },
+      "ProductFilterOptions" : {
+        "type" : "object",
+        "properties" : {
+          "connectivityOptions" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "brands" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        },
+        "required" : [ "brands", "connectivityOptions" ]
       },
       "CurrentUser" : {
         "type" : "object",
@@ -86,9 +627,74 @@
           }
         },
         "required" : [ "roles", "username" ]
+      },
+      "CheckoutOptions" : {
+        "type" : "object",
+        "properties" : {
+          "deliveryMethods" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/DeliveryMethod"
+            }
+          },
+          "paymentMethods" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PaymentMethodOption"
+            }
+          },
+          "vatRate" : {
+            "type" : "number",
+            "description" : "VAT rate included in all prices"
+          }
+        },
+        "required" : [ "deliveryMethods", "paymentMethods", "vatRate" ]
+      },
+      "DeliveryMethod" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "price" : {
+            "type" : "number"
+          }
+        },
+        "required" : [ "id", "name", "price" ]
+      },
+      "PaymentMethodOption" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "enum" : [ "blik", "card" ]
+          },
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "id", "name" ]
       }
     },
     "securitySchemes" : {
+      "keycloak" : {
+        "type" : "oauth2",
+        "description" : "Sign in with Keycloak (authorization code + PKCE)",
+        "flows" : {
+          "authorizationCode" : {
+            "authorizationUrl" : "http://localhost:8081/realms/ecommerce/protocol/openid-connect/auth",
+            "tokenUrl" : "http://localhost:8081/realms/ecommerce/protocol/openid-connect/token",
+            "scopes" : {
+              "openid" : "",
+              "profile" : "",
+              "email" : ""
+            }
+          }
+        }
+      },
       "bearerAuth" : {
         "type" : "http",
         "scheme" : "bearer",
