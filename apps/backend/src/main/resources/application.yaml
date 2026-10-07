@@ -9,6 +9,9 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: create
+    properties:
+      hibernate:
+        default_batch_fetch_size: 50
   security:
     oauth2:
       resourceserver:
@@ -19,3 +22,25 @@ spring:
 springdoc:
   default-produces-media-type: application/json
   writer-with-default-pretty-printer: true
+  swagger-ui:
+    oauth:
+      client-id: ecommerce-frontend
+      use-pkce-with-authorization-code-grant: true
+      scopes: openid profile email
+
+shop:
+  checkout:
+    currency: PLN
+    vat-rate: 0.23
+    delivery-methods:
+      - id: courier
+        name: Kurier
+        price: 14.99
+      - id: pickup
+        name: Odbiór osobisty
+        price: 0
+  payments:
+    # fake: settles payments immediately; set shop.payments.fake.decline=true to test declines
+    provider: fake
+    fake:
+      decline: false
