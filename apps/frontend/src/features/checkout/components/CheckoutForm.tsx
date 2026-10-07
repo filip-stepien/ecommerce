@@ -1,4 +1,4 @@
-import { Box, Stack } from '@mantine/core';
+import { Alert, Box, Stack } from '@mantine/core';
 import { useCart } from '@/features/cart/hooks/useCart';
 import { DeliveryAddressSection } from '@/features/checkout/components/DeliveryAddressSection';
 import { DeliveryMethodSection } from '@/features/checkout/components/DeliveryMethodSection';
@@ -20,13 +20,18 @@ type CheckoutFormProps = {
 export function CheckoutForm({ options, onOrderPlaced }: CheckoutFormProps) {
     const { items, total } = useCart();
     const form = useCheckoutForm(options);
-    const { placeOrder, isPending } = usePlaceOrder();
+    const { placeOrder, isPending, error } = usePlaceOrder();
     const deliveryMethod = options.deliveryMethods.find(
         method => method.id === form.values.deliveryMethod
     );
 
     async function handleSubmit(details: CheckoutFormValues) {
-        await placeOrder({ items, details });
+        try {
+            await placeOrder({ items, details });
+        } catch {
+            return;
+        }
+
         onOrderPlaced();
     }
 
@@ -46,6 +51,11 @@ export function CheckoutForm({ options, onOrderPlaced }: CheckoutFormProps) {
             </Stack>
             <Stack className='w-full shrink-0 gap-5 lg:w-100'>
                 <OrderItems items={items} />
+                {error && (
+                    <Alert color='red' title='Nie udało się złożyć zamówienia'>
+                        {error.message}
+                    </Alert>
+                )}
                 <OrderSummary
                     productsTotal={total}
                     deliveryMethod={deliveryMethod}
