@@ -1,6 +1,8 @@
-import type { RequestError } from '@/api/error';
-import type { Product } from '@/api/generated/model';
+import { type RequestError, toRequestError } from '@/api/error';
+import { useGetProduct } from '@/api/generated';
+import type { Product, ProductDetails as ApiProductDetails } from '@/api/generated/model';
 import { debug_useQuery } from '@/hooks/debug_useQuery';
+import { env } from '@/lib/env';
 
 export type ProductSpecification = {
     name: string;
@@ -19,6 +21,30 @@ export type UseProductDetailsResult = {
     isLoading: boolean;
     error: RequestError | null;
 };
+
+function toProductDetails(product: ApiProductDetails): ProductDetails {
+    return {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        subtitle: product.subtitle ?? '',
+        description: product.description ?? '',
+        images: product.images,
+        specifications: product.specifications
+    };
+}
+
+function useApiProductDetails(id: string | number): UseProductDetailsResult {
+    const { data, isLoading, error } = useGetProduct(Number(id), {
+        query: { select: toProductDetails }
+    });
+
+    return {
+        product: data ?? null,
+        isLoading,
+        error: toRequestError(error)
+    };
+}
 
 function debug_useStaticProductDetails(id: string | number): UseProductDetailsResult {
     const { data, isLoading } = debug_useQuery<ProductDetails>({
@@ -49,4 +75,4 @@ function debug_useStaticProductDetails(id: string | number): UseProductDetailsRe
     };
 }
 
-export { debug_useStaticProductDetails as useProductDetails };
+export const useProductDetails = env.isDebug ? debug_useStaticProductDetails : useApiProductDetails;

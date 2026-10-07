@@ -1,12 +1,24 @@
-import type { RequestError } from '@/api/error';
+import { type RequestError, toRequestError } from '@/api/error';
+import { useGetRelatedProducts } from '@/api/generated';
 import type { Product } from '@/api/generated/model';
 import { debug_useQuery } from '@/hooks/debug_useQuery';
+import { env } from '@/lib/env';
 
 export type UseRelatedProductsResult = {
     products: Product[];
     isLoading: boolean;
     error: RequestError | null;
 };
+
+function useApiRelatedProducts(productId: string | number): UseRelatedProductsResult {
+    const { data, isLoading, error } = useGetRelatedProducts(Number(productId));
+
+    return {
+        products: data ?? [],
+        isLoading,
+        error: toRequestError(error)
+    };
+}
 
 function debug_useStaticRelatedProducts(_productId: string | number): UseRelatedProductsResult {
     const { data, isLoading } = debug_useQuery<Product[]>([
@@ -25,4 +37,6 @@ function debug_useStaticRelatedProducts(_productId: string | number): UseRelated
     };
 }
 
-export { debug_useStaticRelatedProducts as useRelatedProducts };
+export const useRelatedProducts = env.isDebug
+    ? debug_useStaticRelatedProducts
+    : useApiRelatedProducts;
