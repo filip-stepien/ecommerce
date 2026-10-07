@@ -30,6 +30,12 @@ class ApiSecurityTests {
 	}
 
 	@Test
+	void checkoutOptionsArePublic() throws Exception {
+		mockMvc.perform(get("/api/checkout/options"))
+			.andExpect(status().isOk());
+	}
+
+	@Test
 	void currentUserRequiresToken() throws Exception {
 		mockMvc.perform(get("/api/me"))
 			.andExpect(status().isUnauthorized());
