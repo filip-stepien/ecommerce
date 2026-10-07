@@ -9,4 +9,6 @@ export interface Product {
   id: number;
   name: string;
   price: number;
+  /** First product image, if any */
+  imageUrl?: string;
 }
