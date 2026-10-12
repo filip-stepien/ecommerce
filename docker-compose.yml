@@ -28,6 +28,7 @@ services:
       - "8081:8080"
     volumes:
       - ./keycloak/realm-ecommerce.json:/opt/keycloak/data/import/realm-ecommerce.json:ro
+      - ./keycloak/themes/volt:/opt/keycloak/themes/volt:ro
     healthcheck:
       test:
         - CMD-SHELL
