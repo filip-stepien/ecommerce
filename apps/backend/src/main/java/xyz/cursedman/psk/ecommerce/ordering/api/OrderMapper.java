@@ -5,6 +5,10 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import xyz.cursedman.psk.ecommerce.config.MapStructConfig;
+import xyz.cursedman.psk.ecommerce.ordering.api.dto.CustomerOrderDto;
+import xyz.cursedman.psk.ecommerce.ordering.api.dto.PurchasedItemDto;
+import xyz.cursedman.psk.ecommerce.ordering.domain.Order;
+import xyz.cursedman.psk.ecommerce.ordering.domain.OrderItem;
 import xyz.cursedman.psk.ecommerce.ordering.api.dto.InvoiceDto;
 import xyz.cursedman.psk.ecommerce.ordering.api.dto.OrderDetailsDto;
 import xyz.cursedman.psk.ecommerce.ordering.api.dto.OrderItemDto;
@@ -16,6 +20,13 @@ import xyz.cursedman.psk.ecommerce.ordering.domain.InvoiceDetails;
 
 @Mapper(config = MapStructConfig.class)
 public interface OrderMapper {
+
+	CustomerOrderDto toCustomerOrder(Order order);
+
+	@Mapping(target = "productId", source = "product.id")
+	@Mapping(target = "name", source = "productName")
+	@Mapping(target = "image", expression = "java(item.getProduct().getImages().isEmpty() ? null : item.getProduct().getImages().getFirst())")
+	PurchasedItemDto toPurchasedItem(OrderItem item);
 
 	@Mapping(target = "contact", source = "details.contact")
 	@Mapping(target = "deliveryAddress", source = "details.address")

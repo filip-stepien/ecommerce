@@ -18,6 +18,7 @@ import xyz.cursedman.psk.ecommerce.catalog.domain.ProductRepository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -43,6 +44,11 @@ class DeclinedPaymentApiTests {
 				.content(OrderRequests.orderJson("[{\"id\": 1, \"quantity\": 2}]")))
 			.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.status").value("PAYMENT_FAILED"));
+
+		mockMvc.perform(get("/api/orders").with(jwt().authorities(new SimpleGrantedAuthority("ROLE_user"))))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$[0].status").value("PAYMENT_FAILED"))
+			.andExpect(jsonPath("$[0].paymentFailureReason").isNotEmpty());
 
 		assertThat(productRepository.findById(1L).orElseThrow().getStock()).isEqualTo(stockBefore);
 	}

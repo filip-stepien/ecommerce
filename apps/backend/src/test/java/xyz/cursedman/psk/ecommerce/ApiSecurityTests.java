@@ -51,6 +51,14 @@ class ApiSecurityTests {
 	}
 
 	@Test
+	void readingOrdersRequiresUserRoleAndToken() throws Exception {
+		for (String path : new String[] { "/api/orders", "/api/orders/1" }) {
+			mockMvc.perform(get(path)).andExpect(status().isUnauthorized());
+			mockMvc.perform(get(path).with(jwt())).andExpect(status().isForbidden());
+		}
+	}
+
+	@Test
 	void currentUserRequiresToken() throws Exception {
 		mockMvc.perform(get("/api/me"))
 			.andExpect(status().isUnauthorized());

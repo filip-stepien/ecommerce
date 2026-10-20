@@ -1,6 +1,7 @@
 package xyz.cursedman.psk.ecommerce.ordering.api;
 
 import org.junit.jupiter.api.Test;
+import jakarta.persistence.EntityManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -42,6 +43,9 @@ class OrderApiTests {
 
 	@Autowired
 	private OrderRepository orderRepository;
+
+	@Autowired
+	private EntityManager entityManager;
 
 	ResultActions placeOrder(String json) throws Exception {
 		return mockMvc.perform(post("/api/orders")
@@ -130,6 +134,54 @@ class OrderApiTests {
 
 		assertThat(orderRepository.findAll()).singleElement()
 			.satisfies(order -> assertThat(order.getInvoice()).isNull());
+	}
+
+	@Test
+	void listsCreatedOrdersNewestFirstAndReadsPersistedDetails() throws Exception {
+		placeOrder(orderJson("[{\"id\": 1, \"quantity\": 2}]"))
+			.andExpect(status().isCreated());
+		long firstId = orderRepository.findAll().getFirst().getId();
+		placeOrder(orderJson("[{\"id\": 8, \"quantity\": 1}]"))
+			.andExpect(status().isCreated());
+		long newestId = orderRepository.findByCustomerIdOrderByCreatedAtDescIdDesc(CUSTOMER_ID).getFirst().getId();
+		entityManager.flush();
+		entityManager.clear();
+
+		mockMvc.perform(get("/api/orders").with(jwt().jwt(token -> token.subject(CUSTOMER_ID))
+			.authorities(new SimpleGrantedAuthority("ROLE_user"))))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.length()").value(2))
+			.andExpect(jsonPath("$[0].id").value(newestId))
+			.andExpect(jsonPath("$[1].id").value(firstId));
+
+		mockMvc.perform(get("/api/orders/{id}", firstId).with(jwt().jwt(token -> token.subject(CUSTOMER_ID))
+			.authorities(new SimpleGrantedAuthority("ROLE_user"))))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.status").value("PAID"))
+			.andExpect(jsonPath("$.items[0].name").value("Sony WH-1000XM5"))
+			.andExpect(jsonPath("$.items[0].quantity").value(2))
+			.andExpect(jsonPath("$.items[0].unitPrice").value(1299))
+			.andExpect(jsonPath("$.items[0].lineTotal").value(2598))
+			.andExpect(jsonPath("$.total").value(2612.99))
+			.andExpect(jsonPath("$.deliveryAddress.city").value("Warszawa"))
+			.andExpect(jsonPath("$.createdAt").isNotEmpty())
+			.andExpect(jsonPath("$.customerId").doesNotExist());
+	}
+
+	@Test
+	void cannotReadAnotherCustomersOrder() throws Exception {
+		placeOrder(orderJson("[{\"id\": 1, \"quantity\": 1}]"));
+		long id = orderRepository.findAll().getFirst().getId();
+		mockMvc.perform(get("/api/orders").with(jwt().jwt(token -> token.subject("another-customer"))
+			.authorities(new SimpleGrantedAuthority("ROLE_user"))))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.length()").value(0));
+		mockMvc.perform(get("/api/orders/{id}", id).with(jwt().jwt(token -> token.subject("another-customer"))
+			.authorities(new SimpleGrantedAuthority("ROLE_user"))))
+			.andExpect(status().isNotFound());
+		mockMvc.perform(get("/api/orders/999999").with(jwt().jwt(token -> token.subject(CUSTOMER_ID))
+			.authorities(new SimpleGrantedAuthority("ROLE_user"))))
+			.andExpect(status().isNotFound());
 	}
 
 	@Test
