@@ -1,0 +1,444 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\setlist{itemsep=2pt,topsep=4pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\renewcommand{\arraystretch}{1.25}
+
+\title{Założenia projektowe\\[4pt]\large Sklep internetowy z elektroniką}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+\vspace{-2em}
+\tableofcontents
+
+\section{Cel i zakres}
+
+Celem jest serwis WWW -- sklep internetowy z elektroniką użytkową. Oprócz zwykłej sprzedaży będzie on dobierał
+klientowi produkty na podstawie jego zachowania i pomagał mu wybrać sprzęt w rozmowie z asystentem AI.
+
+Poza zakresem: prawdziwe płatności online (płatność będzie symulowana), integracja z firmami kurierskimi,
+wysyłka e-maili, opinie o produktach.
+
+\section{Technologie}
+
+{\small
+\begin{tabularx}{\textwidth}{P{2.8cm}LL}
+\toprule
+\textbf{Element} & \textbf{Technologia} & \textbf{Zastosowanie} \\
+\midrule
+Frontend & React, TypeScript, Mantine, Tailwind CSS & strona sklepu i panel administratora \\
+Backend & Java, Spring Boot & logika sklepu i inteligentnych usług \\
+Baza danych & PostgreSQL z rozszerzeniem pgvector & dane sklepu i wektory opisów produktów \\
+Logowanie & Keycloak (OAuth 2.0 / OpenID Connect) & rejestracja, logowanie, role \\
+Model językowy & Claude Opus 5.5 (API Anthropic) & asystent AI \\
+Wektory opisów & wielojęzyczny model bge-m3 uruchamiany lokalnie w Ollama & wyszukiwanie produktów po
+znaczeniu opisu \\
+Uruchamianie & Docker Compose & całe środowisko uruchamiane jedną komendą \\
+\bottomrule
+\end{tabularx}\par\medskip
+}
+
+\section{Role użytkowników}
+
+{\small
+\begin{tabularx}{\textwidth}{P{2.8cm}L}
+\toprule
+\textbf{Rola} & \textbf{Uprawnienia} \\
+\midrule
+Gość & przeglądanie i wyszukiwanie produktów, koszyk, bestsellery, czat z asystentem \\
+Klient & jak gość + składanie zamówień, historia zamówień, strona konta, rekomendacje personalizowane \\
+Administrator & zarządzanie produktami i stanami magazynowymi, zmiana statusów zamówień \\
+\bottomrule
+\end{tabularx}\par\medskip
+}
+
+\section{Dane produktów}
+
+Każdy produkt będzie miał:
+\begin{itemize}
+  \item nazwę, markę, kategorię, cenę brutto i stan magazynowy,
+  \item opis i zdjęcia,
+  \item specyfikację do wyświetlenia na karcie produktu,
+  \item \textbf{atrybuty techniczne}, z których korzystają dopasowanie (\ref{sec:dopasowanie}) i zestawy
+        (\ref{sec:zestawy}),
+  \item \textbf{ocenę jakości} w skali 1--100, według której będzie wybierany najlepszy zestaw.
+\end{itemize}
+
+Przykładowe grupy kategorii: audio (słuchawki, głośniki), smartfony i smartwatche, komputery (laptopy,
+tablety), monitory i peryferia (myszy, klawiatury), akcesoria (etui, ładowarki, kable, stacje dokujące).
+
+\filbreak
+Zakładane atrybuty techniczne:
+
+{\small
+\begin{tabularx}{\textwidth}{P{3.6cm}L}
+\toprule
+\textbf{Kategoria} & \textbf{Atrybuty} \\
+\midrule
+smartfon & model, złącze ładowania \\
+etui & model telefonu, do którego pasuje \\
+ładowarka, kabel & złącze, moc \\
+laptop & wyjścia wideo, USB-C z obrazem \\
+monitor & wejścia wideo, przekątna, częstotliwość odświeżania \\
+stacja dokująca & wymagane USB-C z obrazem \\
+\bottomrule
+\end{tabularx}\par\medskip
+}
+
+Sklep będzie miał przygotowane dane startowe, wystarczające do pokazania wszystkich funkcji.
+
+\section{Sklep -- wymagania funkcjonalne}
+
+{\small
+\begin{tabularx}{\textwidth}{LP{1.5cm}}
+\toprule
+\textbf{Wymaganie} & \textbf{Rola} \\
+\midrule
+Rejestracja i logowanie przez Keycloak z własnym motywem strony logowania & gość \\
+Katalog produktów ze stronicowaniem & wszyscy \\
+Filtry (kategoria, marka, cena, łączność) i sortowanie (trafność, cena, nowość, popularność) & wszyscy \\
+Wyszukiwarka działająca jak w punkcie~\ref{sec:wyszukiwanie} & wszyscy \\
+Karta produktu: zdjęcia, cena, dostępność, opis, specyfikacja, rekomendacje
+z punktu~\ref{sec:rekomendacje} & wszyscy \\
+Koszyk: dodawanie, zmiana ilości, usuwanie, podsumowanie & wszyscy \\
+Zamówienie: dane kontaktowe, adres, metoda dostawy (kurier, odbiór osobisty), płatność (BLIK, karta),
+faktura & klient \\
+Cena zamówienia liczona po stronie serwera z aktualnych cen; rezerwacja towaru przy zamówieniu, zwolnienie
+przy nieudanej płatności lub anulowaniu & klient \\
+Historia zamówień i szczegóły zamówienia ze statusem & klient \\
+Strona konta: dane klienta, ostatnie zamówienia, podsumowanie zakupów, zapisany adres & klient \\
+Panel: dodawanie, edycja i usuwanie produktów, zmiana stanów magazynowych & admin \\
+Panel: lista zamówień, zmiana statusu & admin \\
+\bottomrule
+\end{tabularx}\par\medskip
+}
+
+\filbreak
+Statusy zamówienia i dozwolone przejścia:
+
+{\small
+\begin{tabularx}{\textwidth}{P{4cm}LP{3.2cm}}
+\toprule
+\textbf{Status} & \textbf{Może przejść do} & \textbf{Kto zmienia} \\
+\midrule
+Oczekuje na płatność & Opłacone, Płatność nieudana & system płatności \\
+Opłacone & Wysłane, Anulowane & administrator \\
+Wysłane & -- & -- \\
+Płatność nieudana & -- & -- \\
+Anulowane & -- & -- \\
+\bottomrule
+\end{tabularx}\par\medskip
+}
+
+\section{Inteligentne usługi}
+
+\subsection{Rejestrowanie aktywności}\label{sec:aktywnosc}
+
+Sklep będzie zapisywał zdarzenia zalogowanych klientów: wyświetlenie produktu, wyszukiwanie (z treścią
+zapytania), dodanie do koszyka i zakup. Na tych danych będą się opierać rekomendacje i ich ocena.
+
+\subsection{Symulator klientów}\label{sec:symulator}
+
+Sklep nie będzie miał prawdziwych klientów, więc dane o aktywności wygeneruje symulator. Przy każdym
+uruchomieniu da te same wyniki, żeby ocena jakości była powtarzalna.
+
+Każdy symulowany klient będzie miał jeden typ:
+
+{\small
+\begin{tabularx}{\textwidth}{P{3.6cm}L}
+\toprule
+\textbf{Typ klienta} & \textbf{Czym się interesuje} \\
+\midrule
+gracz & laptopy do gier, monitory, myszy, klawiatury, słuchawki \\
+biegacz & słuchawki sportowe, smartwatche \\
+student & laptopy, tablety, słuchawki, myszy \\
+fan muzyki & słuchawki, głośniki \\
+pracownik biurowy & laptopy, monitory, stacje dokujące, klawiatury, myszy \\
+fan smartfonów & smartfony, smartwatche, akcesoria do telefonów \\
+\bottomrule
+\end{tabularx}\par\medskip
+}
+
+Zasady zachowania symulowanych klientów:
+\begin{itemize}
+  \item większość oglądanych produktów pochodzi z kategorii ich typu, reszta jest losowa,
+  \item każdy klient ma ulubione marki, które wybiera częściej,
+  \item każdy klient ma budżet zależny od typu,
+  \item tylko część obejrzanych produktów trafia do koszyka i tylko część koszyków kończy się zakupem,
+  \item po zakupie smartfona lub laptopa klient często dokupuje pasujące akcesorium
+        (punkt~\ref{sec:dopasowanie}).
+\end{itemize}
+
+\subsection{Rekomendacje produktów}\label{sec:rekomendacje}
+
+{\footnotesize
+\begin{tabularx}{\textwidth}{P{2.7cm}P{2.6cm}LP{3.6cm}}
+\toprule
+\textbf{Sekcja} & \textbf{Gdzie} & \textbf{Jak liczona} & \textbf{Gdy brak danych} \\
+\midrule
+„Polecane dla Ciebie” & strona główna zalogowanego & filtrowanie kolaboratywne (opis niżej) & mało
+historii: reguła kategoria/marka; brak historii: bestsellery \\
+„Na podstawie oglądanych” & strona główna zalogowanego & produkty z kategorii ostatnio oglądanych,
+w podobnej cenie & sekcja ukryta \\
+„Bestsellery” & strona główna gościa & najczęściej kupowane produkty z ostatniego miesiąca & najnowsze
+produkty \\
+„Często kupowane razem” & karta produktu & produkty, które najczęściej trafiały do tych samych zamówień &
+pasujące akcesoria z punktu~\ref{sec:dopasowanie} \\
+„Podobne produkty” & karta produktu & produkty z tej samej kategorii o najbardziej podobnym opisie
+(\ref{sec:wyszukiwanie}) i zbliżonej cenie & ta sama kategoria, najbliższa cena \\
+\bottomrule
+\end{tabularx}\par\medskip
+}
+
+Rekomendacje nie będą pokazywać produktów niedostępnych ani już kupionych przez klienta.
+
+\textbf{Reguła kategoria/marka} -- prosty punkt odniesienia przy ocenie jakości. Polecane są produkty
+z kategorii i marek, które klient już kupował, przy czym zgodność kategorii liczy się bardziej niż zgodność
+marki.
+
+\textbf{Filtrowanie kolaboratywne} -- „klienci, którzy interesowali się tym co Ty, interesowali się
+też\dots”:
+\begin{enumerate}
+  \item Każdy kontakt klienta z produktem ma wagę: zakup waży więcej niż dodanie do koszyka, a to więcej niż
+        wyświetlenie.
+  \item Dwa produkty są podobne, gdy interesują się nimi ci sami klienci (podobieństwo cosinusowe).
+  \item Klient dostaje produkty najbardziej podobne do tych, z którymi miał kontakt, z uwzględnieniem wag
+        kontaktów.
+  \item Podobieństwa będą przeliczane okresowo, a nie przy każdym wyświetleniu strony.
+\end{enumerate}
+
+\subsection{Wyszukiwanie po opisie potrzeb}\label{sec:wyszukiwanie}
+
+Wyszukiwarka połączy dwa sposoby szukania:
+
+{\small
+\begin{tabularx}{\textwidth}{P{2.4cm}LP{4.2cm}}
+\toprule
+\textbf{Sposób} & \textbf{Na czym polega} & \textbf{Przykład, który ma zadziałać} \\
+\midrule
+po słowach & podobieństwo zapytania do nazwy, marki i kategorii, odporne na literówki & „sony xm5” \\
+po znaczeniu & opis produktu i zapytanie zamieniane na wektory, porównanie ich podobieństwa & „cicha
+klawiatura do biura” \\
+\bottomrule
+\end{tabularx}\par\medskip
+}
+
+\begin{itemize}
+  \item Wyniki obu sposobów łączymy metodą RRF: na górę trafiają produkty, które są wysoko na obu listach.
+  \item Kwoty w zapytaniu („do 300 zł”, „od 1000 do 2000 zł”) działają jak filtr ceny.
+  \item Filtry i sortowanie z katalogu działają też na wynikach wyszukiwania.
+\end{itemize}
+
+\subsection{Dopasowanie akcesoriów}\label{sec:dopasowanie}
+
+Sklep sprawdzi, czy akcesoria pasują do urządzenia, według stałych zasad opartych na atrybutach
+z rozdziału 4:
+
+{\small
+\begin{tabularx}{\textwidth}{P{5cm}L}
+\toprule
+\textbf{Para} & \textbf{Zasada} \\
+\midrule
+etui -- smartfon & etui pasuje do modelu smartfona \\
+ładowarka, kabel -- smartfon & to samo złącze \\
+stacja dokująca -- laptop & laptop ma USB-C z obrazem \\
+monitor -- laptop & mają wspólne złącze wideo \\
+\bottomrule
+\end{tabularx}\par\medskip
+}
+
+Dopasowanie będzie widoczne w trzech miejscach:
+\begin{itemize}
+  \item karta smartfona i laptopa -- sekcja „Pasujące akcesoria” z akcesoriami, które pasują do tego
+        urządzenia,
+  \item koszyk -- ostrzeżenie z powodem, gdy akcesorium nie pasuje do urządzenia w koszyku, np. „Etui pasuje
+        do iPhone 15, a w koszyku jest iPhone 16”,
+  \item czat z asystentem -- asystent sprawdzi dopasowanie, zanim zaproponuje akcesoria lub zestaw.
+\end{itemize}
+
+\subsection{Zestawy w budżecie}\label{sec:zestawy}
+
+Zestawy będą dostępne w czacie z asystentem. Klient napisze, czego potrzebuje i ile chce wydać, np.
+\emph{„mam 5000 zł, potrzebuję stanowiska do pracy z laptopem”}. Asystent pokaże zestaw jako karty produktów
+z łączną ceną i przyciskiem „Dodaj cały zestaw”.
+
+Zestaw będzie składany według jednego z szablonów:
+
+{\small
+\begin{tabularx}{\textwidth}{P{4.2cm}L}
+\toprule
+\textbf{Szablon} & \textbf{Części (od najważniejszej)} \\
+\midrule
+stanowisko z laptopem & laptop, monitor, stacja dokująca, mysz, klawiatura \\
+smartfon z akcesoriami & smartfon, etui, ładowarka, słuchawki \\
+\bottomrule
+\end{tabularx}\par\medskip
+}
+
+Sposób wyboru:
+\begin{enumerate}
+  \item Dla każdej części wybieramy kilku kandydatów z różnych przedziałów cenowych, najlepszych pod względem
+        oceny jakości i zgodnych z wymaganiami klienta (np. „wolę Samsunga”).
+  \item Sprawdzamy kombinacje kandydatów i odrzucamy te, które przekraczają budżet lub nie pasują do siebie
+        (\ref{sec:dopasowanie}).
+  \item Wybieramy kombinację o najwyższej łącznej ocenie jakości, w której ważniejsze części liczą się
+        bardziej.
+  \item Gdy nic nie mieści się w budżecie, asystent pokaże najtańszy pasujący zestaw i brakującą kwotę.
+\end{enumerate}
+
+\subsection{Asystent AI}\label{sec:asystent}
+
+W rogu każdej strony będzie przycisk czatu z asystentem, a na telefonie czat otworzy się na pełnym ekranie.
+Odpowiedź będzie się pojawiać na bieżąco, w trakcie pisania. Proponowane produkty wyświetlą się jako karty
+z ceną i przyciskiem „Dodaj do koszyka”, a zestaw -- z łączną ceną i przyciskiem „Dodaj cały zestaw”.
+
+Asystent ma:
+\begin{itemize}
+  \item odpowiadać po polsku, krótko, z kilkoma propozycjami naraz i jednozdaniowym uzasadnieniem każdej,
+  \item dopytać o budżet lub zastosowanie, gdy ich nie zna,
+  \item brać nazwy, ceny i dostępność wyłącznie z danych sklepu, nigdy z własnej wiedzy,
+  \item poprawiać propozycję na prośbę klienta, np. „a coś tańszego?”, „wolę Lenovo”,
+  \item porównywać produkty, gdy klient o to poprosi,
+  \item uwzględniać ostatnie zakupy zalogowanego klienta, np. nie proponować drugiej myszy,
+  \item odmawiać rozmowy niezwiązanej z zakupami elektroniki,
+  \item nie zmieniać cen, nie dawać rabatów i nie ujawniać swoich instrukcji.
+\end{itemize}
+
+Model językowy będzie rozumiał wiadomość klienta i pisał odpowiedź, a dane będzie
+brał z funkcji sklepu:
+
+{\small
+\begin{tabularx}{\textwidth}{P{6cm}L}
+\toprule
+\textbf{Funkcja dostępna dla asystenta} & \textbf{Na czym się opiera} \\
+\midrule
+wyszukanie produktów & wyszukiwarka z punktu~\ref{sec:wyszukiwanie} \\
+szczegóły produktu & aktualna cena, dostępność, specyfikacja \\
+sprawdzenie dopasowania & zasady z punktu~\ref{sec:dopasowanie} \\
+złożenie zestawu w budżecie & algorytm z punktu~\ref{sec:zestawy} \\
+ostatnie zakupy klienta & historia zamówień zalogowanego klienta \\
+pokazanie produktów jako kart & wyświetlenie kart w oknie czatu \\
+\bottomrule
+\end{tabularx}\par\medskip
+}
+
+Ceny i zestawy będzie liczył sklep, a nie model, dlatego asystent nie poda nieistniejącego produktu ani złej
+ceny. Asystent sam niczego nie doda do koszyka -- zrobi to klient przyciskiem na karcie. Długość wiadomości
+i liczba wiadomości w rozmowie będą ograniczone.
+
+\subsection{Ocena jakości}\label{sec:ocena}
+
+Każda inteligentna usługa zostanie zmierzona i porównana z prostszym rozwiązaniem. Wyniki trafią do
+sprawozdania.
+
+Rekomendacje i wyszukiwanie będą oceniane trzema miarami liczonymi dla 10 pierwszych pozycji listy:
+
+{\small
+\begin{tabularx}{\textwidth}{P{3cm}L}
+\toprule
+\textbf{Miara} & \textbf{Pytanie} \\
+\midrule
+precision@10 & jaka część z 10 pokazanych produktów to trafienia? \\
+recall@10 & jaką część wszystkich trafnych produktów udało się pokazać? \\
+NDCG@10 & czy trafienia są na górze listy? (1 = idealna kolejność, 0 = brak trafień) \\
+\bottomrule
+\end{tabularx}\par\medskip
+}
+
+\section{Bezpieczeństwo}
+
+\begin{itemize}
+  \item \textbf{Logowanie} -- wyłącznie przez Keycloak (OAuth 2.0 / OpenID Connect). Aplikacja nie będzie
+        przechowywać haseł.
+  \item \textbf{Uprawnienia} -- backend będzie sprawdzał tożsamość i rolę przy każdym żądaniu, zgodnie
+        z tabelą ról z rozdziału 3.
+  \item \textbf{Izolacja danych} -- klient zobaczy tylko własne zamówienia.
+  \item \textbf{Dane wejściowe} -- każde żądanie będzie walidowane, a baza chroniona przed SQL injection.
+  \item \textbf{Ceny} -- liczone wyłącznie na serwerze, niezależnie od tego, co wyśle przeglądarka.
+  \item \textbf{Asystent AI} -- będzie tylko odczytywał dane sklepu, nie zobaczy danych osobowych klientów
+        i nie będzie mógł zmieniać cen, koszyka ani zamówień. Klucz do API modelu językowego będzie tylko
+        na serwerze.
+  \item \textbf{Testy} -- testy automatyczne sprawdzą dostęp do każdej funkcji bez logowania, jako klient
+        i jako administrator.
+\end{itemize}
+
+\section{Wymagania niefunkcjonalne}
+
+\begin{itemize}
+  \item Typowa odpowiedź serwera poniżej 0,5 s.
+  \item Pierwsze słowa odpowiedzi asystenta w ciągu kilku sekund.
+  \item Interfejs responsywny (telefon, tablet, komputer), w języku polskim.
+  \item Całe środowisko uruchamiane jedną komendą na Windows, Linux i macOS.
+  \item Opis API generowany automatycznie z kodu backendu, a na jego podstawie klient API we frontendzie.
+  \item Testy integracyjne backendu na prawdziwej bazie PostgreSQL.
+\end{itemize}
+
+\section{Podział pracy}
+
+Każda osoba odpowiada za swój obszar w całości: backend, frontend, testy i część sprawozdania. Każda ma
+porównywalną ilość pracy przy sklepie i przy inteligentnych usługach.
+
+{\footnotesize
+\begin{tabularx}{\textwidth}{P{1cm}P{2.4cm}LL}
+\toprule
+\textbf{Osoba} & \textbf{Obszar} & \textbf{Sklep} & \textbf{Inteligentne usługi} \\
+\midrule
+A & zakupy i asystent & środowisko uruchomieniowe, koszyk, zamówienie z płatnością symulowaną & asystent AI
+(\ref{sec:asystent}), ocena asystenta \\
+B & katalog i wyszukiwanie & dane produktów z atrybutami, katalog, filtry, sortowanie, karta produktu &
+wyszukiwanie (\ref{sec:wyszukiwanie}), dopasowanie akcesoriów (\ref{sec:dopasowanie}), zestawy
+(\ref{sec:zestawy}), ocena wyszukiwania i zestawów \\
+C & klienci i personalizacja & Keycloak (role, motyw logowania), historia zamówień, strona konta, panel
+administratora & aktywność (\ref{sec:aktywnosc}), symulator (\ref{sec:symulator}), rekomendacje
+(\ref{sec:rekomendacje}), ocena rekomendacji \\
+\bottomrule
+\end{tabularx}\par\medskip
+}
+
+Funkcje, z których korzysta asystent, dostarczają osoby B i C. Osoba A podłącza je do asystenta.
+
+\section{Kolejność prac}
+
+{\footnotesize
+\begin{tabularx}{\textwidth}{P{1.4cm}LLL}
+\toprule
+\textbf{Tydzień} & \textbf{Osoba A} & \textbf{Osoba B} & \textbf{Osoba C} \\
+\midrule
+1--2 & środowisko uruchomieniowe, szkielet backendu i frontendu & model danych produktu z atrybutami,
+pierwsze dane & Keycloak, role, logowanie we frontendzie \\
+3--5 & koszyk, zamówienie, płatność & katalog, filtry, karta produktu, komplet danych & strona konta, panel
+administratora (produkty), rejestrowanie aktywności \\
+6--8 & czat z asystentem: rozmowa, odpowiedź na bieżąco, wyszukiwanie produktów & wektory opisów,
+wyszukiwanie po słowach i po znaczeniu, łączenie wyników & historia zamówień, panel administratora
+(zamówienia), symulator klientów \\
+9--11 & pozostałe funkcje asystenta, karty produktów i zestawów w czacie & dopasowanie akcesoriów, zestawy
+w budżecie, „Pasujące akcesoria” & bestsellery, reguła kategoria/marka, filtrowanie kolaboratywne,
+pozostałe sekcje rekomendacji \\
+12--13 & rozmowy testowe, ocena asystenta, poprawki & zapytania testowe, ocena wyszukiwania i zestawów &
+ocena rekomendacji \\
+14--15 & sprawozdanie, scenariusze pokazowe, prezentacja & sprawozdanie, scenariusze pokazowe, prezentacja &
+sprawozdanie, scenariusze pokazowe, prezentacja \\
+\bottomrule
+\end{tabularx}\par\medskip
+}
+
+\end{document}

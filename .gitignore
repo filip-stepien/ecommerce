@@ -11,3 +11,8 @@ Thumbs.db
 .env.local
 docker-compose.override.yml
 .direnv
+
+docs/zalozenia/*
+!docs/zalozenia/*.md
+!docs/zalozenia/*.tex
+!docs/zalozenia/*.pdf
