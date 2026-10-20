@@ -11,7 +11,7 @@ import { useAccountOverview } from '@/features/account/hooks/useAccountOverview'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser';
 import { appRoutes } from '@/lib/routes';
 
-export function AccountPage() {
+export function AccountPage({ ordersOnly = false }: { ordersOnly?: boolean }) {
     const { user, isLoading, error } = useCurrentUser();
     const overview = useAccountOverview();
 
@@ -43,10 +43,12 @@ export function AccountPage() {
                             <Text className='text-xs leading-normal text-dimmed'>Moje konto</Text>
                         </Breadcrumbs>
                         <Title order={1} className='text-[32px]'>
-                            Cześć, {user.username}!
+                            {ordersOnly ? 'Moje zamówienia' : `Cześć, ${user.username}!`}
                         </Title>
                         <Text className='text-sm text-dimmed'>
-                            Twoje zamówienia, zapisane dane i oferty w jednym miejscu.
+                            {ordersOnly
+                                ? 'Historia zakupów, status przesyłek i szczegóły Twoich zamówień.'
+                                : 'Twoje zamówienia, zapisane dane i oferty w jednym miejscu.'}
                         </Text>
                     </Stack>
                     <Flex className='flex-col items-start gap-7 md:flex-row'>
@@ -61,22 +63,26 @@ export function AccountPage() {
                                 error={overview.error}
                                 errorText='Nie udało się pobrać danych konta'
                             >
-                                {overview => (
-                                    <>
-                                        <AccountMetrics
-                                            orders={overview.orders}
-                                            offers={overview.offers}
-                                        />
-                                        <RecentOrders orders={overview.orders} />
-                                        <PersonalOffers offers={overview.offers} />
-                                        <SavedCustomerInfo
-                                            user={user}
-                                            address={overview.defaultAddress}
-                                        />
-                                    </>
-                                )}
+                                {overview =>
+                                    ordersOnly ? (
+                                        <RecentOrders orders={overview.orders} all />
+                                    ) : (
+                                        <>
+                                            <AccountMetrics
+                                                orders={overview.orders}
+                                                offers={overview.offers}
+                                            />
+                                            <RecentOrders orders={overview.orders} />
+                                            <PersonalOffers offers={overview.offers} />
+                                            <SavedCustomerInfo
+                                                user={user}
+                                                address={overview.defaultAddress}
+                                            />
+                                        </>
+                                    )
+                                }
                             </QueryResult>
-                            <AccountRecommendations />
+                            {!ordersOnly && <AccountRecommendations />}
                         </Stack>
                     </Flex>
                 </Stack>

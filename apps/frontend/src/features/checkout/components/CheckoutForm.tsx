@@ -1,3 +1,4 @@
+import type { PlaceOrderResponse } from '@/api/generated/model';
 import { Alert, Box, Stack } from '@mantine/core';
 import { useCart } from '@/features/cart/hooks/useCart';
 import { DeliveryAddressSection } from '@/features/checkout/components/DeliveryAddressSection';
@@ -14,7 +15,7 @@ import { usePlaceOrder } from '@/features/checkout/hooks/usePlaceOrder';
 
 type CheckoutFormProps = {
     options: CheckoutOptions;
-    onOrderPlaced: () => void;
+    onOrderPlaced: (order: PlaceOrderResponse) => void;
 };
 
 export function CheckoutForm({ options, onOrderPlaced }: CheckoutFormProps) {
@@ -27,12 +28,11 @@ export function CheckoutForm({ options, onOrderPlaced }: CheckoutFormProps) {
 
     async function handleSubmit(details: CheckoutFormValues) {
         try {
-            await placeOrder({ items, details });
+            const order = await placeOrder({ items, details, options });
+            onOrderPlaced(order);
         } catch {
             return;
         }
-
-        onOrderPlaced();
     }
 
     return (

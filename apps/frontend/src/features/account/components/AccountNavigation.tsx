@@ -1,3 +1,5 @@
+import { Link, useLocation } from 'react-router';
+import { appRoutes } from '@/lib/routes';
 import { Center, Divider, NavLink, Paper, Stack, Text } from '@mantine/core';
 import {
     Gift,
@@ -26,14 +28,25 @@ const navLinkClassNames = {
 };
 
 export function AccountNavigation({ user, favoriteCount }: AccountNavigationProps) {
+    const { pathname } = useLocation();
     const { signOut } = useAuth();
     const links = [
-        { label: 'Podsumowanie', icon: LayoutDashboard, href: '#', active: true },
-        { label: 'Moje zamówienia', icon: Package, href: '#orders' },
-        { label: 'Oferty dla Ciebie', icon: Gift, href: '#offers' },
+        {
+            label: 'Podsumowanie',
+            icon: LayoutDashboard,
+            href: appRoutes.account,
+            active: pathname === appRoutes.account
+        },
+        {
+            label: 'Moje zamówienia',
+            icon: Package,
+            href: appRoutes.orders,
+            active: pathname === appRoutes.orders
+        },
+        { label: 'Oferty dla Ciebie', icon: Gift, href: `${appRoutes.account}#offers` },
         { label: `Ulubione (${favoriteCount})`, icon: Heart },
-        { label: 'Adresy dostawy', icon: MapPin, href: '#address' },
-        { label: 'Dane osobowe', icon: UserRound, href: '#personal-data' },
+        { label: 'Adresy dostawy', icon: MapPin, href: `${appRoutes.account}#address` },
+        { label: 'Dane osobowe', icon: UserRound, href: `${appRoutes.account}#personal-data` },
         { label: 'Bezpieczeństwo', icon: ShieldCheck }
     ];
 
@@ -56,7 +69,9 @@ export function AccountNavigation({ user, favoriteCount }: AccountNavigationProp
                 {links.map(({ label, icon: Icon, href, active }) => (
                     <NavLink
                         key={label}
-                        href={href}
+                        component={Link}
+                        to={href ?? pathname}
+                        disabled={!href}
                         label={label}
                         active={active}
                         leftSection={<Icon size={20} />}

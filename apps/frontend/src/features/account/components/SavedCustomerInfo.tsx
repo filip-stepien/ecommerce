@@ -6,7 +6,7 @@ import type { User } from '@/features/auth/hooks/useCurrentUser';
 
 type SavedCustomerInfoProps = {
     user: User;
-    address: Address;
+    address: Address | null;
 };
 
 type InfoCardProps = PropsWithChildren<{
@@ -50,14 +50,18 @@ export function SavedCustomerInfo({ user, address }: SavedCustomerInfoProps) {
             />
             <InfoCard
                 id='address'
-                title='Domyślny adres'
+                title='Ostatni adres dostawy'
                 lines={[
-                    address.recipient,
-                    address.street,
-                    `${address.postalCode} ${address.city}, ${address.country}`
+                    ...(address
+                        ? [
+                              address.recipient,
+                              address.street,
+                              `${address.postalCode} ${address.city}, ${address.country}`
+                          ]
+                        : ['Brak adresu — pojawi się po złożeniu zamówienia.'])
                 ]}
             >
-                {address.lastUsedOrderNumber && (
+                {address?.lastUsedOrderNumber && (
                     <Text className='text-xs leading-normal text-dimmed'>
                         Wykorzystany w zamówieniu #{address.lastUsedOrderNumber}
                     </Text>

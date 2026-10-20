@@ -7,6 +7,7 @@ import { getCurrentFullPath } from '@/lib/path';
 
 export type UseAuthResult = {
     isAuthenticated: boolean;
+    userId: string | null;
     isLoading: boolean;
     error: AuthError | null;
     signIn: (returnTo?: string) => Promise<void>;
@@ -18,6 +19,7 @@ function useOidcAuth(): UseAuthResult {
 
     return {
         isAuthenticated: oidc.isAuthenticated,
+        userId: oidc.user?.profile.sub ?? null,
         isLoading: oidc.isLoading,
         error: toAuthError(oidc.error),
         signIn: (returnTo = getCurrentFullPath()) => {
@@ -36,6 +38,7 @@ function useDebugAuth(): UseAuthResult {
 
     return {
         isAuthenticated,
+        userId: isAuthenticated ? 'debug-user' : null,
         isLoading: false,
         error: null,
         signIn: async (returnTo = getCurrentFullPath()) => {

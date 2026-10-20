@@ -1,5 +1,7 @@
 import { Stack, Text, Title } from '@mantine/core';
-import { useState } from 'react';
+import { useNavigate } from 'react-router';
+import type { PlaceOrderResponse } from '@/api/generated/model';
+import { orderPath } from '@/lib/routes';
 import { QueryResult } from '@/components/QueryResult';
 import { useCart } from '@/features/cart/hooks/useCart';
 import { CheckoutForm } from '@/features/checkout/components/CheckoutForm';
@@ -9,22 +11,14 @@ import { useCheckoutOptions } from '@/features/checkout/hooks/useCheckoutOptions
 export function CheckoutPage() {
     const { items, clear } = useCart();
     const { options, isLoading, error } = useCheckoutOptions();
-    const [isOrderPlaced, setIsOrderPlaced] = useState(false);
+    const navigate = useNavigate();
 
-    function handleOrderPlaced() {
+    function handleOrderPlaced(order: PlaceOrderResponse) {
         clear();
-        setIsOrderPlaced(true);
+        navigate(orderPath(String(order.orderId)), { replace: true });
     }
 
     function renderContent() {
-        if (isOrderPlaced) {
-            return (
-                <CheckoutNotice title='Dziękujemy za zamówienie'>
-                    Twoje zamówienie zostało przyjęte do realizacji.
-                </CheckoutNotice>
-            );
-        }
-
         if (items.length === 0) {
             return (
                 <CheckoutNotice title='Twój koszyk jest pusty'>
@@ -49,13 +43,12 @@ export function CheckoutPage() {
         <Stack className='gap-7'>
             <Stack className='gap-2'>
                 <Title order={1} className='text-[32px]'>
-                    {isOrderPlaced ? 'Potwierdzenie' : 'Dostawa i płatność'}
+                    Dostawa i płatność
                 </Title>
-                {!isOrderPlaced && (
-                    <Text className='text-sm text-dimmed'>
-                        Podaj adres, wybierz sposób dostawy i metodę płatności.
-                    </Text>
-                )}
+
+                <Text className='text-sm text-dimmed'>
+                    Podaj adres, wybierz sposób dostawy i metodę płatności.
+                </Text>
             </Stack>
             {renderContent()}
         </Stack>

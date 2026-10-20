@@ -1,23 +1,26 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { type RequestError, toRequestError } from '@/api/error';
 import { placeOrder } from '@/api/generated';
 import {
     type OrderDetailsPaymentMethod,
     type PlaceOrderRequest,
-    PlaceOrderResponseStatus
+    type PlaceOrderResponse
 } from '@/api/generated/model';
 import type { CartItem } from '@/features/cart/contexts/cart';
 import type { CheckoutFormValues } from '@/features/checkout/hooks/useCheckoutForm';
-import { debug_useMutation } from '@/hooks/debug_useMutation';
+import type { CheckoutOptions } from './useCheckoutOptions';
+import { customerOrdersKey } from '@/features/orders/useCustomerOrders';
+import { placeDebugOrder } from '@/features/orders/debugOrders';
 import { env } from '@/lib/env';
 
 export type OrderDraft = {
     items: CartItem[];
     details: CheckoutFormValues;
+    options: CheckoutOptions;
 };
 
 export type UsePlaceOrderResult = {
-    placeOrder: (order: OrderDraft) => Promise<void>;
+    placeOrder: (order: OrderDraft) => Promise<PlaceOrderResponse>;
     isPending: boolean;
     error: RequestError | null;
 };
@@ -38,36 +41,15 @@ function toPlaceOrderRequest({ items, details }: OrderDraft): PlaceOrderRequest 
     };
 }
 
-async function placeOrderAndCheckPayment(order: OrderDraft): Promise<void> {
-    const response = await placeOrder(toPlaceOrderRequest(order));
-
-    if (response.status === PlaceOrderResponseStatus.PAYMENT_FAILED) {
-        throw new Error(
-            `Płatność za zamówienie nr ${response.orderId} została odrzucona. Spróbuj ponownie lub wybierz inną metodę płatności.`
-        );
-    }
-}
-
-function useApiPlaceOrder(): UsePlaceOrderResult {
+export function usePlaceOrder(): UsePlaceOrderResult {
+    const queryClient = useQueryClient();
     const { mutateAsync, isPending, error } = useMutation({
-        mutationFn: placeOrderAndCheckPayment
+        mutationFn: (order: OrderDraft) =>
+            env.isDebug ? placeDebugOrder(order) : placeOrder(toPlaceOrderRequest(order)),
+        // A declined payment still creates an order and must appear in history.
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: customerOrdersKey });
+        }
     });
-
-    return {
-        placeOrder: mutateAsync,
-        isPending,
-        error: toRequestError(error)
-    };
+    return { placeOrder: mutateAsync, isPending, error: toRequestError(error) };
 }
-
-function debug_useStaticPlaceOrder(): UsePlaceOrderResult {
-    const { mutate, isPending } = debug_useMutation<OrderDraft>();
-
-    return {
-        placeOrder: mutate,
-        isPending,
-        error: null
-    };
-}
-
-export const usePlaceOrder = env.isDebug ? debug_useStaticPlaceOrder : useApiPlaceOrder;

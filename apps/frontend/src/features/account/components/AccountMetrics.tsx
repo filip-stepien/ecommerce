@@ -9,13 +9,15 @@ type AccountMetricsProps = {
 };
 
 export function AccountMetrics({ orders, offers }: AccountMetricsProps) {
-    const inTransitCount = orders.filter(order => order.status === 'inTransit').length;
-    const ordersTotal = orders.reduce((sum, order) => sum + order.total, 0);
+    const pendingCount = orders.filter(order => order.status === 'pendingPayment').length;
+    const ordersTotal = orders
+        .filter(order => order.status === 'paid')
+        .reduce((sum, order) => sum + order.total, 0);
     const metrics = [
         {
             label: 'Zamówienia',
             value: orders.length,
-            caption: `${pluralize(inTransitCount, { one: 'przesyłka', few: 'przesyłki', many: 'przesyłek' })} w drodze`
+            caption: `${pluralize(pendingCount, { one: 'zamówienie', few: 'zamówienia', many: 'zamówień' })} do opłacenia`
         },
         {
             label: 'Twoje zakupy',
