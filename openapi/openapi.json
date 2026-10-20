@@ -9,6 +9,31 @@
   } ],
   "paths" : {
     "/api/orders" : {
+      "get" : {
+        "tags" : [ "orders" ],
+        "summary" : "List the authenticated customer's orders, newest first",
+        "operationId" : "getCustomerOrders",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/CustomerOrder"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        }, {
+          "keycloak" : [ ]
+        } ]
+      },
       "post" : {
         "tags" : [ "orders" ],
         "summary" : "Place an order and start its payment",
@@ -295,6 +320,39 @@
             }
           }
         }
+      }
+    },
+    "/api/orders/{id}" : {
+      "get" : {
+        "tags" : [ "orders" ],
+        "summary" : "Get an order belonging to the authenticated customer",
+        "operationId" : "getCustomerOrder",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CustomerOrder"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        }, {
+          "keycloak" : [ ]
+        } ]
       }
     },
     "/api/me" : {
@@ -609,6 +667,93 @@
           }
         },
         "required" : [ "brands", "connectivityOptions" ]
+      },
+      "CustomerOrder" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "status" : {
+            "type" : "string",
+            "enum" : [ "PENDING_PAYMENT", "PAID", "PAYMENT_FAILED" ]
+          },
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "contact" : {
+            "$ref" : "#/components/schemas/Contact"
+          },
+          "deliveryAddress" : {
+            "$ref" : "#/components/schemas/Address"
+          },
+          "invoice" : {
+            "$ref" : "#/components/schemas/Invoice"
+          },
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PurchasedItem"
+            }
+          },
+          "deliveryMethod" : {
+            "type" : "string"
+          },
+          "deliveryPrice" : {
+            "type" : "number"
+          },
+          "paymentMethod" : {
+            "type" : "string",
+            "enum" : [ "blik", "card" ]
+          },
+          "paymentId" : {
+            "type" : "string"
+          },
+          "paymentFailureReason" : {
+            "type" : "string"
+          },
+          "itemsTotal" : {
+            "type" : "number"
+          },
+          "total" : {
+            "type" : "number"
+          },
+          "vatAmount" : {
+            "type" : "number"
+          },
+          "currency" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "contact", "createdAt", "currency", "deliveryAddress", "deliveryMethod", "deliveryPrice", "id", "items", "itemsTotal", "paymentMethod", "status", "total", "vatAmount" ]
+      },
+      "PurchasedItem" : {
+        "type" : "object",
+        "properties" : {
+          "productId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "image" : {
+            "type" : "string"
+          },
+          "quantity" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "unitPrice" : {
+            "type" : "number"
+          },
+          "lineTotal" : {
+            "type" : "number"
+          }
+        },
+        "required" : [ "lineTotal", "name", "productId", "quantity", "unitPrice" ]
       },
       "CurrentUser" : {
         "type" : "object",
