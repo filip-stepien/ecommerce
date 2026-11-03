@@ -21,7 +21,7 @@ function RoutedAuthProvider({ children }: PropsWithChildren) {
 export function Providers({ children }: PropsWithChildren) {
     return (
         <MantineProvider theme={theme} defaultColorScheme='light'>
-            <Notifications position='bottom-right' autoClose={2500} />
+            <Notifications position='top-right' autoClose={2500} />
             <QueryClientProvider client={queryClient}>
                 <BrowserRouter>
                     <RoutedAuthProvider>

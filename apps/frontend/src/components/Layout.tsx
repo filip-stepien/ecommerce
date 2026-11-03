@@ -4,6 +4,7 @@ import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { CartDrawer } from '@/features/cart/components/CartDrawer';
+import { ChatWidget } from '@/features/chat/components/ChatWidget';
 import { useScrollToTop } from '@/hooks/useScrollToTop';
 
 export function Layout() {
@@ -25,6 +26,7 @@ export function Layout() {
             </Box>
             <Footer />
             <CartDrawer />
+            <ChatWidget />
         </Box>
     );
 }
