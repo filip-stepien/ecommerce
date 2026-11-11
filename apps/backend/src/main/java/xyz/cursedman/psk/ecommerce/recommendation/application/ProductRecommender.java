@@ -8,8 +8,8 @@ import java.util.Set;
 
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
+import org.jspecify.annotations.Nullable;
 
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
