@@ -12,6 +12,7 @@ import xyz.cursedman.psk.ecommerce.TestcontainersConfiguration;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -29,7 +30,7 @@ class ProductApiTests {
 	void pagesProducts() throws Exception {
 		mockMvc.perform(get("/api/products").param("page", "2").param("pageSize", "5"))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.total").value(14))
+			.andExpect(jsonPath("$.total").value(100))
 			.andExpect(jsonPath("$.products.length()").value(5))
 			.andExpect(jsonPath("$.products[0].id").value(6))
 			.andExpect(jsonPath("$.products[0].imageUrl").exists());
@@ -38,14 +39,16 @@ class ProductApiTests {
 	@Test
 	void filtersAndSortsProducts() throws Exception {
 		mockMvc.perform(get("/api/products")
-				.param("category", "Audio")
+				.param("category", "Słuchawki")
 				.param("connectivity", "USB-C")
 				.param("onlyAvailable", "true")
-				.param("sort", "priceDesc"))
+				.param("sort", "priceDesc")
+				.param("pageSize", "3"))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.total").value(3))
+			// 12 headphones minus JBL Live 770NC (no USB-C) and Galaxy Buds3 (out of stock)
+			.andExpect(jsonPath("$.total").value(10))
 			.andExpect(jsonPath("$.products[*].name",
-				contains("Bose QuietComfort Ultra", "Sony WH-1000XM5", "JBL Flip 6")));
+				contains("Bose QuietComfort Ultra", "Sony WH-1000XM5", "Beats Powerbeats Pro 2")));
 	}
 
 	@Test
@@ -86,7 +89,7 @@ class ProductApiTests {
 		mockMvc.perform(get("/api/products/1/related"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$[*].id", not(hasItem(1))))
-			.andExpect(jsonPath("$.length()").value(4));
+			.andExpect(jsonPath("$.length()").value(6));
 		mockMvc.perform(get("/api/products/1/related").param("limit", "2"))
 			.andExpect(jsonPath("$[*].id", contains(2, 3)));
 	}
@@ -104,10 +107,11 @@ class ProductApiTests {
 	void returnsCategoriesAndFilterOptions() throws Exception {
 		mockMvc.perform(get("/api/products/categories"))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$", contains("Akcesoria", "Audio", "Komputery", "Smartfony")));
+			.andExpect(jsonPath("$.length()").value(16))
+			.andExpect(jsonPath("$", hasItems("Słuchawki", "Laptopy", "Monitory", "Etui")));
 		mockMvc.perform(get("/api/products/filter-options"))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.connectivityOptions", contains("Bluetooth", "USB-C", "Wi-Fi")))
+			.andExpect(jsonPath("$.connectivityOptions", contains("Bluetooth", "DisplayPort", "HDMI", "Jack 3,5 mm", "NFC", "Radio 2,4 GHz", "USB-C", "Wi-Fi")))
 			.andExpect(jsonPath("$.brands", hasItem("Logitech")));
 	}
 

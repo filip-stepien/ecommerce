@@ -21,10 +21,11 @@ function useApiProductCategories(): UseProductCategoriesResult {
 
 function debug_useStaticProductCategories(): UseProductCategoriesResult {
     const { data, isLoading } = debug_useQuery<string[]>([
-        'Komputery',
+        'Laptopy',
+        'Monitory',
         'Smartfony',
-        'Audio',
-        'Akcesoria'
+        'Słuchawki',
+        'Etui'
     ]);
 
     return {

@@ -49,7 +49,7 @@ class ProductRecommenderTests {
 	}
 
 	static final PurchaseHistory BOUGHT_PRODUCT_1 =
-		customerId -> new CustomerPurchases(Set.of(1L), Map.of("Audio", 1L), Map.of("Sony", 1L));
+		customerId -> new CustomerPurchases(Set.of(1L), Map.of("Słuchawki", 1L), Map.of("Sony", 1L));
 
 	static List<Long> ids(List<Product> products) {
 		return products.stream().map(Product::getId).toList();

@@ -49,18 +49,23 @@ class RecommendationApiTests {
 	void guestWithoutSalesGetsNewestProducts() throws Exception {
 		mockMvc.perform(get("/api/products/recommended").param("limit", "3"))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$[*].id", contains(14, 13, 12)));
+			.andExpect(jsonPath("$[*].id", contains(100, 99, 98)));
 	}
 
 	@Test
 	void customerGetsProductsMatchingPurchasesFirst() throws Exception {
-		buy("alice", 1, 1); // Sony WH-1000XM5, Audio
+		buy("alice", 1, 1); // Sony WH-1000XM5, Słuchawki
 
-		mockMvc.perform(get("/api/products/recommended").param("limit", "4").with(customer("alice")))
+		mockMvc.perform(get("/api/products/recommended").param("limit", "12").with(customer("alice")))
 			.andExpect(status().isOk())
-			// in-stock Audio products not bought yet, then the best-seller is skipped (bought) and the newest follows
-			.andExpect(jsonPath("$[0:3].id", containsInAnyOrder(2, 3, 5)))
-			.andExpect(jsonPath("$[3].id").value(14))
+			.andExpect(jsonPath("$.length()").value(12))
+			// same category and brand first (Sony WF-1000XM5)
+			.andExpect(jsonPath("$[0].id").value(15))
+			// then the other 9 in-stock headphones
+			.andExpect(jsonPath("$[1:10].id", containsInAnyOrder(2, 3, 16, 17, 18, 19, 20, 21, 22)))
+			// then the same brand only (Sony ULT Field 1); the best-seller is skipped (bought) and the newest follows
+			.andExpect(jsonPath("$[10].id").value(24))
+			.andExpect(jsonPath("$[11].id").value(100))
 			.andExpect(jsonPath("$[*].id", not(hasItem(1))));
 	}
 
@@ -71,7 +76,7 @@ class RecommendationApiTests {
 
 		mockMvc.perform(get("/api/products/recommended").param("limit", "3"))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$[*].id", contains(8, 6, 14)));
+			.andExpect(jsonPath("$[*].id", contains(8, 6, 100)));
 	}
 
 	@Test
