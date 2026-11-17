@@ -8,6 +8,7 @@ export type CustomerOrder = {
     time: string;
     firstItemName: string;
     otherItemCount: number;
+    itemQuantity: number;
     status: OrderStatus;
     total: number;
     subtotal: number;
@@ -56,6 +57,10 @@ export const orderStatuses: Record<
     }
 };
 
+export function isOrderStatus(value: string): value is OrderStatus {
+    return value in orderStatuses;
+}
+
 export function toCustomerOrder(order: ApiCustomerOrder): CustomerOrder {
     const status: OrderStatus =
         order.status === 'PAID'
@@ -66,13 +71,16 @@ export function toCustomerOrder(order: ApiCustomerOrder): CustomerOrder {
     const time = new Intl.DateTimeFormat('pl-PL', { hour: '2-digit', minute: '2-digit' }).format(
         new Date(order.createdAt)
     );
+    const itemQuantity = order.items.reduce((sum, item) => sum + item.quantity, 0);
+
     return {
         number: String(order.id),
         date: order.createdAt,
         time,
         status,
         firstItemName: order.items[0]?.name ?? 'Zamówienie',
-        otherItemCount: Math.max(0, order.items.reduce((sum, item) => sum + item.quantity, 0) - 1),
+        otherItemCount: Math.max(0, itemQuantity - 1),
+        itemQuantity,
         total: order.total,
         subtotal: order.itemsTotal,
         items: order.items.map(item => ({
@@ -109,4 +117,41 @@ export function toCustomerOrder(order: ApiCustomerOrder): CustomerOrder {
         contact: order.contact,
         address: order.deliveryAddress
     };
+}
+
+export type OrderFilter = {
+    search: string;
+    status: OrderStatus | 'all';
+};
+
+function toSearchableText(order: CustomerOrder): string {
+    const itemNames = order.items.map(item => item.name).join(' ');
+
+    return `${order.number} ${order.firstItemName} ${itemNames}`.toLocaleLowerCase('pl');
+}
+
+export function filterOrders(orders: CustomerOrder[], filter: OrderFilter): CustomerOrder[] {
+    const phrase = filter.search.trim().toLocaleLowerCase('pl');
+
+    return orders.filter(
+        order =>
+            (filter.status === 'all' || order.status === filter.status) &&
+            toSearchableText(order).includes(phrase)
+    );
+}
+
+export function describeItems(order: CustomerOrder): string {
+    return order.otherItemCount > 0
+        ? `${order.firstItemName} + ${order.otherItemCount} szt.`
+        : order.firstItemName;
+}
+
+export function countPendingPayments(orders: CustomerOrder[]): number {
+    return orders.filter(order => order.status === 'pendingPayment').length;
+}
+
+export function sumPaidTotal(orders: CustomerOrder[]): number {
+    const paidOrders = orders.filter(order => order.status === 'paid');
+
+    return paidOrders.reduce((sum, order) => sum + order.total, 0);
 }

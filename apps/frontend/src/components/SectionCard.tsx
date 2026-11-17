@@ -1,11 +1,11 @@
 import { Paper } from '@mantine/core';
 import type { PropsWithChildren } from 'react';
 
-type AccountCardProps = PropsWithChildren<{
+type SectionCardProps = PropsWithChildren<{
     id?: string;
 }>;
 
-export function AccountCard({ id, children }: AccountCardProps) {
+export function SectionCard({ id, children }: SectionCardProps) {
     return (
         <Paper withBorder id={id} className='rounded-xl p-6'>
             {children}

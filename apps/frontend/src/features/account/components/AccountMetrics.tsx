@@ -1,18 +1,19 @@
 import { SimpleGrid, Stack, Text } from '@mantine/core';
-import { AccountCard } from '@/features/account/components/AccountCard';
-import type { Order, PersonalOffer } from '@/features/account/hooks/useAccountOverview';
+import { SectionCard } from '@/components/SectionCard';
+import {
+    countPendingPayments,
+    type CustomerOrder,
+    sumPaidTotal
+} from '@/features/orders/lib/customerOrder';
 import { formatPrice, pluralize } from '@/lib/format';
 
 type AccountMetricsProps = {
-    orders: Order[];
-    offers: PersonalOffer[];
+    orders: CustomerOrder[];
 };
 
-export function AccountMetrics({ orders, offers }: AccountMetricsProps) {
-    const pendingCount = orders.filter(order => order.status === 'pendingPayment').length;
-    const ordersTotal = orders
-        .filter(order => order.status === 'paid')
-        .reduce((sum, order) => sum + order.total, 0);
+export function AccountMetrics({ orders }: AccountMetricsProps) {
+    const pendingCount = countPendingPayments(orders);
+    const paidTotal = sumPaidTotal(orders);
     const metrics = [
         {
             label: 'Zamówienia',
@@ -21,20 +22,15 @@ export function AccountMetrics({ orders, offers }: AccountMetricsProps) {
         },
         {
             label: 'Twoje zakupy',
-            value: formatPrice(ordersTotal),
+            value: formatPrice(paidTotal),
             caption: 'Od dołączenia do volt'
-        },
-        {
-            label: 'Oferty dla Ciebie',
-            value: offers.length,
-            caption: 'Dopasowane do aktywności'
         }
     ];
 
     return (
-        <SimpleGrid className='grid-cols-1 gap-5 sm:grid-cols-3'>
+        <SimpleGrid className='grid-cols-1 gap-5 sm:grid-cols-2'>
             {metrics.map(metric => (
-                <AccountCard key={metric.label}>
+                <SectionCard key={metric.label}>
                     <Stack className='gap-2 leading-normal'>
                         <Text className='text-xs leading-normal text-dimmed'>{metric.label}</Text>
                         <Text className='text-[27px] leading-normal font-semibold'>
@@ -42,7 +38,7 @@ export function AccountMetrics({ orders, offers }: AccountMetricsProps) {
                         </Text>
                         <Text className='text-xs leading-normal text-dimmed'>{metric.caption}</Text>
                     </Stack>
-                </AccountCard>
+                </SectionCard>
             ))}
         </SimpleGrid>
     );

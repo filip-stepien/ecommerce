@@ -3,19 +3,19 @@ import type { OrderDraft } from '@/features/checkout/hooks/usePlaceOrder';
 
 const storageKey = 'volt-debug-orders-v1';
 
-export function readDebugOrders(): CustomerOrder[] {
+export function debug_readOrders(): CustomerOrder[] {
     const stored = sessionStorage.getItem(storageKey);
     return stored ? (JSON.parse(stored) as CustomerOrder[]) : [];
 }
 
-export async function placeDebugOrder({
+export async function debug_placeOrder({
     items,
     details,
     options
 }: OrderDraft): Promise<PlaceOrderResponse> {
     const delivery = options.deliveryMethods.find(method => method.id === details.deliveryMethod);
     if (!delivery) throw new Error('Wybierz dostępną metodę dostawy.');
-    const orders = readDebugOrders();
+    const orders = debug_readOrders();
     const id = Math.max(Date.now(), (orders[0]?.id ?? 0) + 1);
     const itemsTotal =
         Math.round(items.reduce((sum, item) => sum + item.quantity * item.price, 0) * 100) / 100;

@@ -1,15 +1,6 @@
-import { useCustomerOrders } from '@/features/orders/useCustomerOrders';
-import type { CustomerOrder } from '@/features/orders/model';
 import type { RequestError } from '@/api/error';
-
-export type Order = CustomerOrder;
-
-export type PersonalOffer = {
-    id: string;
-    title: string;
-    description: string[];
-    actionLabel: string;
-};
+import { useCustomerOrders } from '@/features/orders/hooks/useCustomerOrders';
+import type { CustomerOrder } from '@/features/orders/lib/customerOrder';
 
 export type Address = {
     recipient: string;
@@ -21,9 +12,7 @@ export type Address = {
 };
 
 export type AccountOverview = {
-    favoriteCount: number;
-    orders: Order[];
-    offers: PersonalOffer[];
+    orders: CustomerOrder[];
     defaultAddress: Address | null;
 };
 
@@ -33,24 +22,25 @@ export type UseAccountOverviewResult = {
     error: RequestError | null;
 };
 
+function toAddress(order: CustomerOrder): Address {
+    return {
+        recipient: `${order.contact.firstName} ${order.contact.lastName}`,
+        street: `${order.address.street} ${order.address.houseNumber}`,
+        postalCode: order.address.postalCode,
+        city: order.address.city,
+        country: order.address.country,
+        lastUsedOrderNumber: order.number
+    };
+}
+
 export function useAccountOverview(): UseAccountOverviewResult {
     const { orders, isLoading, error } = useCustomerOrders();
-    const latest = orders[0];
+    const latestOrder = orders[0];
+
     return {
         overview: {
-            favoriteCount: 0,
             orders,
-            offers: [],
-            defaultAddress: latest
-                ? {
-                      recipient: `${latest.contact.firstName} ${latest.contact.lastName}`,
-                      street: `${latest.address.street} ${latest.address.houseNumber}`,
-                      postalCode: latest.address.postalCode,
-                      city: latest.address.city,
-                      country: latest.address.country,
-                      lastUsedOrderNumber: latest.number
-                  }
-                : null
+            defaultAddress: latestOrder ? toAddress(latestOrder) : null
         },
         isLoading,
         error

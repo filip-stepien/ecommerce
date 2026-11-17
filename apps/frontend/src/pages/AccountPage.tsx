@@ -1,19 +1,36 @@
-import { Anchor, Breadcrumbs, Flex, Stack, Text, Title } from '@mantine/core';
-import { Link } from 'react-router';
 import { QueryResult } from '@/components/QueryResult';
+import { AccountLayout } from '@/features/account/components/AccountLayout';
 import { AccountMetrics } from '@/features/account/components/AccountMetrics';
-import { AccountNavigation } from '@/features/account/components/AccountNavigation';
 import { AccountRecommendations } from '@/features/account/components/AccountRecommendations';
-import { PersonalOffers } from '@/features/account/components/PersonalOffers';
 import { RecentOrders } from '@/features/account/components/RecentOrders';
 import { SavedCustomerInfo } from '@/features/account/components/SavedCustomerInfo';
 import { useAccountOverview } from '@/features/account/hooks/useAccountOverview';
-import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser';
+import { type User, useCurrentUser } from '@/features/auth/hooks/useCurrentUser';
 import { appRoutes } from '@/lib/routes';
 
-export function AccountPage({ ordersOnly = false }: { ordersOnly?: boolean }) {
+function AccountSummary({ user }: { user: User }) {
+    const { overview, isLoading, error } = useAccountOverview();
+
+    return (
+        <QueryResult
+            data={overview}
+            isLoading={isLoading}
+            error={error}
+            errorText='Nie udało się pobrać danych konta'
+        >
+            {overview => (
+                <>
+                    <AccountMetrics orders={overview.orders} />
+                    <RecentOrders orders={overview.orders} />
+                    <SavedCustomerInfo user={user} address={overview.defaultAddress} />
+                </>
+            )}
+        </QueryResult>
+    );
+}
+
+export function AccountPage() {
     const { user, isLoading, error } = useCurrentUser();
-    const overview = useAccountOverview();
 
     return (
         <QueryResult
@@ -23,69 +40,18 @@ export function AccountPage({ ordersOnly = false }: { ordersOnly?: boolean }) {
             errorText='Nie udało się pobrać użytkownika'
         >
             {user => (
-                <Stack className='gap-7'>
-                    <Stack className='gap-2'>
-                        <Breadcrumbs
-                            separatorMargin={4}
-                            classNames={{
-                                root: 'text-xs leading-normal text-dimmed',
-                                separator: 'text-dimmed'
-                            }}
-                        >
-                            <Anchor
-                                component={Link}
-                                to={appRoutes.home}
-                                c='dimmed'
-                                className='text-xs'
-                            >
-                                Strona główna
-                            </Anchor>
-                            <Text className='text-xs leading-normal text-dimmed'>Moje konto</Text>
-                        </Breadcrumbs>
-                        <Title order={1} className='text-[32px]'>
-                            {ordersOnly ? 'Moje zamówienia' : `Cześć, ${user.username}!`}
-                        </Title>
-                        <Text className='text-sm text-dimmed'>
-                            {ordersOnly
-                                ? 'Historia zakupów, status przesyłek i szczegóły Twoich zamówień.'
-                                : 'Twoje zamówienia, zapisane dane i oferty w jednym miejscu.'}
-                        </Text>
-                    </Stack>
-                    <Flex className='flex-col items-start gap-7 md:flex-row'>
-                        <AccountNavigation
-                            user={user}
-                            favoriteCount={overview.overview?.favoriteCount ?? 0}
-                        />
-                        <Stack className='w-full min-w-0 flex-1 gap-6 md:w-auto'>
-                            <QueryResult
-                                data={overview.overview}
-                                isLoading={overview.isLoading}
-                                error={overview.error}
-                                errorText='Nie udało się pobrać danych konta'
-                            >
-                                {overview =>
-                                    ordersOnly ? (
-                                        <RecentOrders orders={overview.orders} all />
-                                    ) : (
-                                        <>
-                                            <AccountMetrics
-                                                orders={overview.orders}
-                                                offers={overview.offers}
-                                            />
-                                            <RecentOrders orders={overview.orders} />
-                                            <PersonalOffers offers={overview.offers} />
-                                            <SavedCustomerInfo
-                                                user={user}
-                                                address={overview.defaultAddress}
-                                            />
-                                        </>
-                                    )
-                                }
-                            </QueryResult>
-                            {!ordersOnly && <AccountRecommendations />}
-                        </Stack>
-                    </Flex>
-                </Stack>
+                <AccountLayout
+                    user={user}
+                    breadcrumbs={[
+                        { label: 'Strona główna', to: appRoutes.home },
+                        { label: 'Moje konto' }
+                    ]}
+                    title={`Cześć, ${user.username}!`}
+                    description='Twoje zamówienia i zapisane dane w jednym miejscu.'
+                >
+                    <AccountSummary user={user} />
+                    <AccountRecommendations />
+                </AccountLayout>
             )}
         </QueryResult>
     );
