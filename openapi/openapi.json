@@ -68,6 +68,41 @@
         } ]
       }
     },
+    "/api/assistant/chat" : {
+      "post" : {
+        "tags" : [ "assistant" ],
+        "summary" : "Stream the assistant's reply to the conversation",
+        "description" : "Public. With a token, the assistant takes the customer's recent purchases into account. The reply is a stream of server-sent events whose data is an AssistantStreamEvent: text and products events, ending with done, or with error when the reply failed.",
+        "operationId" : "streamChat",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ChatRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "text/event-stream" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AssistantStreamEvent"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        }, {
+          "keycloak" : [ ]
+        } ]
+      }
+    },
     "/api/products" : {
       "get" : {
         "tags" : [ "products" ],
@@ -550,6 +585,124 @@
           }
         },
         "required" : [ "currency", "orderId", "status", "total" ]
+      },
+      "ChatMessage" : {
+        "type" : "object",
+        "properties" : {
+          "role" : {
+            "type" : "string",
+            "enum" : [ "user", "assistant" ]
+          },
+          "content" : {
+            "type" : "string",
+            "description" : "User messages have between 1 and 1000 characters",
+            "maxLength" : 4000,
+            "minLength" : 0
+          },
+          "productIds" : {
+            "type" : "array",
+            "description" : "Ids of the products shown as cards under an assistant message",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            },
+            "maxItems" : 6,
+            "minItems" : 0
+          }
+        },
+        "required" : [ "content", "role" ]
+      },
+      "ChatRequest" : {
+        "type" : "object",
+        "properties" : {
+          "messages" : {
+            "type" : "array",
+            "description" : "The conversation, oldest message first; the last message comes from the user",
+            "items" : {
+              "$ref" : "#/components/schemas/ChatMessage"
+            },
+            "maxItems" : 20,
+            "minItems" : 0
+          }
+        },
+        "required" : [ "messages" ]
+      },
+      "AssistantDone" : {
+        "type" : "object",
+        "description" : "The reply is complete",
+        "properties" : {
+          "type" : {
+            "type" : "string",
+            "enum" : [ "done" ]
+          }
+        },
+        "required" : [ "type" ]
+      },
+      "AssistantError" : {
+        "type" : "object",
+        "description" : "The reply failed; the message can be shown to the customer",
+        "properties" : {
+          "type" : {
+            "type" : "string",
+            "enum" : [ "error" ]
+          },
+          "message" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "message", "type" ]
+      },
+      "AssistantProducts" : {
+        "type" : "object",
+        "description" : "Products to show as cards under the reply",
+        "properties" : {
+          "type" : {
+            "type" : "string",
+            "enum" : [ "products" ]
+          },
+          "products" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Product"
+            }
+          }
+        },
+        "required" : [ "products", "type" ]
+      },
+      "AssistantStreamEvent" : {
+        "description" : "One event of the assistant's reply stream; the stream ends after done or error",
+        "discriminator" : {
+          "propertyName" : "type",
+          "mapping" : {
+            "text" : "#/components/schemas/AssistantText",
+            "products" : "#/components/schemas/AssistantProducts",
+            "done" : "#/components/schemas/AssistantDone",
+            "error" : "#/components/schemas/AssistantError"
+          }
+        },
+        "oneOf" : [ {
+          "$ref" : "#/components/schemas/AssistantText"
+        }, {
+          "$ref" : "#/components/schemas/AssistantProducts"
+        }, {
+          "$ref" : "#/components/schemas/AssistantDone"
+        }, {
+          "$ref" : "#/components/schemas/AssistantError"
+        } ]
+      },
+      "AssistantText" : {
+        "type" : "object",
+        "description" : "The next fragment of the reply text",
+        "properties" : {
+          "type" : {
+            "type" : "string",
+            "enum" : [ "text" ]
+          },
+          "text" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "text", "type" ]
       },
       "Product" : {
         "type" : "object",
