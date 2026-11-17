@@ -1,3 +1,4 @@
+export * from './assistant/assistant';
 export * from './checkout/checkout';
 export * from './orders/orders';
 export * from './products/products';

@@ -6,6 +6,18 @@
  */
 
 export * from './address';
+export * from './assistantDone';
+export * from './assistantDoneType';
+export * from './assistantError';
+export * from './assistantErrorType';
+export * from './assistantProducts';
+export * from './assistantProductsType';
+export * from './assistantStreamEvent';
+export * from './assistantText';
+export * from './assistantTextType';
+export * from './chatMessage';
+export * from './chatMessageRole';
+export * from './chatRequest';
 export * from './checkoutOptions';
 export * from './contact';
 export * from './currentUser';

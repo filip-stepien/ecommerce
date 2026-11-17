@@ -20,5 +20,19 @@ export default defineConfig({
                 }
             }
         }
+    },
+    apiZod: {
+        input: '../../openapi/openapi.json',
+        output: {
+            mode: 'tags-split',
+            target: 'src/api/zod',
+            schemas: {
+                path: 'src/api/zod/model',
+                type: 'zod'
+            },
+            client: 'zod',
+            fileExtension: '.zod.ts',
+            clean: true
+        }
     }
 });
