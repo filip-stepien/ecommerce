@@ -2,6 +2,7 @@ package xyz.cursedman.psk.ecommerce.catalog.api.dto;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 
@@ -10,5 +11,5 @@ public record ProductDto(
 	@Schema(requiredMode = RequiredMode.REQUIRED) long id,
 	@Schema(requiredMode = RequiredMode.REQUIRED) String name,
 	@Schema(requiredMode = RequiredMode.REQUIRED) BigDecimal price,
-	@Schema(description = "First product image, if any") String imageUrl) {
+	@Schema(description = "First product image, if any") @JsonInclude(JsonInclude.Include.NON_NULL) String imageUrl) {
 }

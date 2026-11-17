@@ -1,6 +1,10 @@
 package xyz.cursedman.psk.ecommerce.catalog.application;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
@@ -40,6 +44,14 @@ public class ProductService {
 	public Product getProduct(long id) {
 		return productRepository.findWithDetailsById(id)
 			.orElseThrow(() -> new ProductNotFoundException(id));
+	}
+
+	public List<Product> findProductsInOrder(List<Long> ids) {
+		Map<Long, Product> productsById = productRepository.findAllById(ids).stream()
+			.collect(Collectors.toMap(Product::getId, Function.identity()));
+		List<Product> foundInRequestedOrder = ids.stream().map(productsById::get).filter(Objects::nonNull).toList();
+
+		return initializeImages(foundInRequestedOrder);
 	}
 
 	public List<Product> findRelatedProducts(long id, int limit) {
