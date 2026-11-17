@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import type { PropsWithChildren } from 'react';
 import {
     ActionIcon,
     Affix,
@@ -10,31 +10,90 @@ import {
     Text,
     Transition
 } from '@mantine/core';
-import { useDisclosure, useMediaQuery, useReducedMotion } from '@mantine/hooks';
+import { useDisclosure } from '@mantine/hooks';
 import { MessageCircle, X } from 'lucide-react';
 import { ChatComposer } from '@/features/chat/components/ChatComposer';
 import { ChatConversation } from '@/features/chat/components/ChatConversation';
 import { useChat } from '@/features/chat/hooks/useChat';
+import { useIsMobile } from '@/hooks/useIsMobile';
+
+type ChatContainerProps = PropsWithChildren<{
+    opened: boolean;
+    onClose: () => void;
+}>;
+
+function ChatLauncher({ opened, onToggle }: { opened: boolean; onToggle: () => void }) {
+    return (
+        <ActionIcon
+            size={56}
+            radius='xl'
+            className='shadow-lg'
+            onClick={onToggle}
+            aria-label={opened ? 'Zamknij czat' : 'Otwórz czat z asystentem'}
+        >
+            {opened ? <X size={25} /> : <MessageCircle size={25} />}
+        </ActionIcon>
+    );
+}
+
+function ChatWindow({ opened, onClose, children }: ChatContainerProps) {
+    return (
+        <Transition mounted={opened} transition='slide-up' duration={180}>
+            {transitionStyles => (
+                <Paper
+                    withBorder
+                    shadow='xl'
+                    style={transitionStyles}
+                    className='flex h-[min(540px,calc(100dvh-120px))] w-[380px] max-w-[calc(100vw-48px)] flex-col overflow-hidden rounded-2xl'
+                    onKeyDown={event => {
+                        if (event.key === 'Escape') {
+                            event.stopPropagation();
+                            onClose();
+                        }
+                    }}
+                >
+                    <Group className='shrink-0 justify-between border-b border-default-border p-4'>
+                        <Text className='font-semibold'>Asystent volt</Text>
+                        <CloseButton onClick={onClose} aria-label='Zamknij czat' />
+                    </Group>
+                    {children}
+                </Paper>
+            )}
+        </Transition>
+    );
+}
+
+function ChatDrawer({ opened, onClose, children }: ChatContainerProps) {
+    return (
+        <Drawer
+            opened={opened}
+            onClose={onClose}
+            position='bottom'
+            size='100%'
+            title='Asystent volt'
+            closeButtonProps={{ 'aria-label': 'Zamknij czat' }}
+            transitionProps={{ duration: 180 }}
+            classNames={{
+                content: 'flex h-dvh flex-col',
+                body: 'flex min-h-0 flex-1 flex-col p-0',
+                title: 'font-semibold'
+            }}
+        >
+            <div className='flex min-h-0 flex-1 flex-col pb-[env(safe-area-inset-bottom)]'>
+                {children}
+            </div>
+        </Drawer>
+    );
+}
 
 export function ChatWidget() {
     const chat = useChat();
-    const [opened, { toggle, close: closeChat }] = useDisclosure(false);
-    const mobile = useMediaQuery('(max-width: 47.99em)');
-    const reducedMotion = useReducedMotion();
-    const launcher = useRef<HTMLButtonElement>(null);
+    const [opened, { toggle, close }] = useDisclosure(false);
+    const isMobile = useIsMobile();
 
-    function close() {
-        closeChat();
-        launcher.current?.focus();
-    }
-
-    const content = (
+    const chatContent = (
         <>
-            <ChatConversation
-                messages={chat.messages}
-                replying={chat.replying}
-                onSend={chat.sendMessage}
-            />
+            <ChatConversation messages={chat.messages} onSend={chat.sendMessage} />
             <ChatComposer
                 replying={chat.replying}
                 onSend={chat.sendMessage}
@@ -46,87 +105,16 @@ export function ChatWidget() {
     return (
         <>
             <Affix position={{ bottom: 24, right: 24 }} zIndex={190}>
-                <Stack align='flex-end' gap='md'>
-                    <Transition
-                        mounted={opened && !mobile}
-                        transition='slide-up'
-                        duration={reducedMotion ? 0 : 180}
-                    >
-                        {styles => (
-                            <Paper
-                                id='shopping-chat-desktop'
-                                role='dialog'
-                                aria-label='Asystent volt'
-                                withBorder
-                                shadow='xl'
-                                radius='lg'
-                                style={{
-                                    ...styles,
-                                    width: 380,
-                                    height: 'min(540px, calc(100dvh - 120px))',
-                                    maxWidth: 'calc(100vw - 48px)'
-                                }}
-                                className='flex flex-col overflow-hidden'
-                                onKeyDown={event => {
-                                    if (event.key === 'Escape') {
-                                        event.stopPropagation();
-                                        close();
-                                    }
-                                }}
-                            >
-                                <Group
-                                    justify='space-between'
-                                    p='md'
-                                    className='shrink-0 border-b border-default-border'
-                                >
-                                    <Text fw={600}>Asystent volt</Text>
-                                    <CloseButton onClick={close} aria-label='Zamknij czat' />
-                                </Group>
-                                {content}
-                            </Paper>
-                        )}
-                    </Transition>
-                    <ActionIcon
-                        ref={launcher}
-                        size={56}
-                        radius='xl'
-                        className='shadow-lg'
-                        onClick={toggle}
-                        aria-label={opened ? 'Zamknij czat' : 'Otwórz czat z asystentem'}
-                        aria-expanded={opened}
-                        aria-controls={
-                            opened
-                                ? mobile
-                                    ? 'shopping-chat-mobile'
-                                    : 'shopping-chat-desktop'
-                                : undefined
-                        }
-                    >
-                        {opened ? <X size={25} /> : <MessageCircle size={25} />}
-                    </ActionIcon>
+                <Stack className='items-end gap-4'>
+                    <ChatWindow opened={opened && !isMobile} onClose={close}>
+                        {chatContent}
+                    </ChatWindow>
+                    <ChatLauncher opened={opened} onToggle={toggle} />
                 </Stack>
             </Affix>
-            <Drawer
-                opened={opened && !!mobile}
-                onClose={close}
-                position='bottom'
-                size='100%'
-                title='Asystent volt'
-                closeButtonProps={{ 'aria-label': 'Zamknij czat' }}
-                transitionProps={{ duration: reducedMotion ? 0 : 180 }}
-                classNames={{
-                    content: 'flex h-dvh flex-col',
-                    body: 'flex min-h-0 flex-1 flex-col p-0',
-                    title: 'font-semibold'
-                }}
-            >
-                <div
-                    id='shopping-chat-mobile'
-                    className='flex min-h-0 flex-1 flex-col pb-[env(safe-area-inset-bottom)]'
-                >
-                    {content}
-                </div>
-            </Drawer>
+            <ChatDrawer opened={opened && isMobile} onClose={close}>
+                {chatContent}
+            </ChatDrawer>
         </>
     );
 }
