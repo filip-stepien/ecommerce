@@ -9,8 +9,8 @@ import {
 import type { CartItem } from '@/features/cart/contexts/cart';
 import type { CheckoutFormValues } from '@/features/checkout/hooks/useCheckoutForm';
 import type { CheckoutOptions } from './useCheckoutOptions';
-import { customerOrdersKey } from '@/features/orders/useCustomerOrders';
-import { placeDebugOrder } from '@/features/orders/debugOrders';
+import { customerOrdersKey } from '@/features/orders/hooks/useCustomerOrders';
+import { debug_placeOrder } from '@/features/orders/lib/debug_orders';
 import { env } from '@/lib/env';
 
 export type OrderDraft = {
@@ -45,8 +45,7 @@ export function usePlaceOrder(): UsePlaceOrderResult {
     const queryClient = useQueryClient();
     const { mutateAsync, isPending, error } = useMutation({
         mutationFn: (order: OrderDraft) =>
-            env.isDebug ? placeDebugOrder(order) : placeOrder(toPlaceOrderRequest(order)),
-        // A declined payment still creates an order and must appear in history.
+            env.isDebug ? debug_placeOrder(order) : placeOrder(toPlaceOrderRequest(order)),
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: customerOrdersKey });
         }
