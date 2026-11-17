@@ -9,8 +9,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import xyz.cursedman.psk.ecommerce.config.CurrentUserId;
 import xyz.cursedman.psk.ecommerce.config.OpenApiConfig;
 import xyz.cursedman.psk.ecommerce.ordering.api.dto.PlaceOrderRequestDto;
 import xyz.cursedman.psk.ecommerce.ordering.api.dto.PlaceOrderResponseDto;
@@ -42,14 +41,14 @@ public class OrderController {
 
 	@GetMapping
 	@Operation(summary = "List the authenticated customer's orders, newest first")
-	public List<CustomerOrderDto> getCustomerOrders(@AuthenticationPrincipal Jwt jwt) {
-		return customerOrderService.findOrders(jwt.getSubject()).stream().map(orderMapper::toCustomerOrder).toList();
+	public List<CustomerOrderDto> getCustomerOrders(@CurrentUserId String customerId) {
+		return customerOrderService.findOrders(customerId).stream().map(orderMapper::toCustomerOrder).toList();
 	}
 
 	@GetMapping("/{id:\\d+}")
 	@Operation(summary = "Get an order belonging to the authenticated customer")
-	public CustomerOrderDto getCustomerOrder(@AuthenticationPrincipal Jwt jwt, @PathVariable long id) {
-		return orderMapper.toCustomerOrder(customerOrderService.getOrder(jwt.getSubject(), id));
+	public CustomerOrderDto getCustomerOrder(@CurrentUserId String customerId, @PathVariable long id) {
+		return orderMapper.toCustomerOrder(customerOrderService.getOrder(customerId, id));
 	}
 
 	@PostMapping
@@ -58,9 +57,10 @@ public class OrderController {
 		description = "Prices come from the catalog, not from the client. "
 			+ "A declined payment still creates the order, with status PAYMENT_FAILED.")
 	public PlaceOrderResponseDto placeOrder(
-			@AuthenticationPrincipal Jwt jwt,
-			@Valid @RequestBody PlaceOrderRequestDto request) {
-		return orderMapper.toResponse(checkoutService.placeOrder(jwt.getSubject(), orderMapper.toCommand(request)));
+		@CurrentUserId String customerId,
+		@Valid @RequestBody PlaceOrderRequestDto request
+	) {
+		return orderMapper.toResponse(checkoutService.placeOrder(customerId, orderMapper.toCommand(request)));
 	}
 
 }
