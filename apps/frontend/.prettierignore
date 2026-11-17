@@ -1,5 +1,6 @@
 dist
 src/api/generated
+src/api/zod
 pnpm-lock.yaml
 pnpm-workspace.yaml
 Taskfile.yml
