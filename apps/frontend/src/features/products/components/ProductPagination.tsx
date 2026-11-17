@@ -23,7 +23,6 @@ export function ProductPagination({
             <Group className='gap-3'>
                 <Text className='text-sm text-dimmed'>Na stronę:</Text>
                 <Select
-                    aria-label='Liczba produktów na stronę'
                     className='w-20'
                     data={catalogPageSizeOptions.map(String)}
                     value={String(pageSize)}

@@ -9,7 +9,6 @@ type ProductSearchProps = {
 export function ProductSearch({ value, onChange }: ProductSearchProps) {
     return (
         <TextInput
-            aria-label='Szukaj produktów'
             placeholder='Szukaj produktów…'
             rightSection={<Search size={18} />}
             rightSectionPointerEvents='none'
