@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ActionIcon, Group, Text, Textarea } from '@mantine/core';
+import { getHotkeyHandler } from '@mantine/hooks';
 import { Send, Square } from 'lucide-react';
 import { messageMaxLength } from '@/features/chat/lib/conversation';
 
@@ -30,7 +31,6 @@ export function ChatComposer({ replying, onSend, onStop }: ChatComposerProps) {
             <Group align='flex-end' wrap='nowrap' gap='xs'>
                 <Textarea
                     className='min-w-0 flex-1'
-                    aria-label='Wiadomość do asystenta'
                     placeholder='Jakiego sprzętu szukasz?'
                     autosize
                     minRows={1}
@@ -38,16 +38,7 @@ export function ChatComposer({ replying, onSend, onStop }: ChatComposerProps) {
                     maxLength={messageMaxLength}
                     value={draft}
                     onChange={event => setDraft(event.currentTarget.value)}
-                    onKeyDown={event => {
-                        if (
-                            event.key === 'Enter' &&
-                            !event.shiftKey &&
-                            !event.nativeEvent.isComposing
-                        ) {
-                            event.preventDefault();
-                            sendDraft();
-                        }
-                    }}
+                    onKeyDown={getHotkeyHandler([['Enter', sendDraft]])}
                 />
                 {replying ? (
                     <ActionIcon
