@@ -30,7 +30,6 @@ export function CartDrawerItem({ item }: CartDrawerItemProps) {
                 </Group>
                 <Group className='justify-between'>
                     <NumberInput
-                        aria-label='Ilość'
                         className='w-22'
                         min={1}
                         allowDecimal={false}

@@ -27,7 +27,6 @@ export function ProductPurchaseInfo({ product }: ProductPurchaseInfoProps) {
             </Stack>
             <Group className='gap-3.5'>
                 <NumberInput
-                    aria-label='Ilość'
                     className='w-22'
                     min={1}
                     value={quantity}

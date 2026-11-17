@@ -18,7 +18,6 @@ export function ProductSortSelect({ value, onChange }: ProductSortSelectProps) {
         <Group className='gap-3'>
             <Text className='text-sm text-dimmed'>Sortuj:</Text>
             <Select
-                aria-label='Sortowanie'
                 className='w-55'
                 data={sortOptions}
                 value={value}

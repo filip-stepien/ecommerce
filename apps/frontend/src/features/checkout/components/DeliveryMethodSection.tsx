@@ -12,7 +12,7 @@ type DeliveryMethodSectionProps = {
 export function DeliveryMethodSection({ form, methods }: DeliveryMethodSectionProps) {
     return (
         <CheckoutSection title='2. Sposób dostawy'>
-            <Radio.Group aria-label='Sposób dostawy' {...form.getInputProps('deliveryMethod')}>
+            <Radio.Group {...form.getInputProps('deliveryMethod')}>
                 <Stack className='gap-2.5'>
                     {methods.map(method => (
                         <Radio

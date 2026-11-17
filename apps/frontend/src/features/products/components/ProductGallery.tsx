@@ -23,7 +23,6 @@ export function ProductGallery({ product }: ProductGalleryProps) {
                     <UnstyledButton
                         key={image}
                         aria-label={`Zdjęcie ${index + 1}`}
-                        aria-pressed={index === selectedIndex}
                         onClick={() => setSelectedIndex(index)}
                         className={`h-[86px] w-28 rounded-lg border bg-body p-1.5 ${
                             index === selectedIndex

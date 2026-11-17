@@ -62,7 +62,6 @@ export function ProductFilters({ values, onChange, onClear }: ProductFiltersProp
                 <InputWrapper label='Cena (zł)'>
                     <SimpleGrid className='grid-cols-2 gap-2.5'>
                         <NumberInput
-                            aria-label='Cena od'
                             placeholder='od'
                             min={0}
                             thousandSeparator=' '
@@ -71,7 +70,6 @@ export function ProductFilters({ values, onChange, onClear }: ProductFiltersProp
                             onChange={value => onChange({ minPrice: toNumber(value) })}
                         />
                         <NumberInput
-                            aria-label='Cena do'
                             placeholder='do'
                             min={0}
                             thousandSeparator=' '

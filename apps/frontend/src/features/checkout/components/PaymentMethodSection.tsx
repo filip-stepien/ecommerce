@@ -12,7 +12,7 @@ type PaymentMethodSectionProps = {
 export function PaymentMethodSection({ form, methods }: PaymentMethodSectionProps) {
     return (
         <CheckoutSection title='3. Metoda płatności'>
-            <Radio.Group aria-label='Metoda płatności' {...form.getInputProps('paymentMethod')}>
+            <Radio.Group {...form.getInputProps('paymentMethod')}>
                 <Stack className='gap-2.5'>
                     {methods.map(method => (
                         <Radio
