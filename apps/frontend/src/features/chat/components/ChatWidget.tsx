@@ -10,7 +10,7 @@ import {
     Text,
     Transition
 } from '@mantine/core';
-import { useMediaQuery, useReducedMotion } from '@mantine/hooks';
+import { useDisclosure, useMediaQuery, useReducedMotion } from '@mantine/hooks';
 import { MessageCircle, X } from 'lucide-react';
 import { ChatComposer } from '@/features/chat/components/ChatComposer';
 import { ChatConversation } from '@/features/chat/components/ChatConversation';
@@ -18,19 +18,28 @@ import { useChat } from '@/features/chat/hooks/useChat';
 
 export function ChatWidget() {
     const chat = useChat();
+    const [opened, { toggle, close: closeChat }] = useDisclosure(false);
     const mobile = useMediaQuery('(max-width: 47.99em)');
     const reducedMotion = useReducedMotion();
     const launcher = useRef<HTMLButtonElement>(null);
 
     function close() {
-        chat.close();
+        closeChat();
         launcher.current?.focus();
     }
 
     const content = (
         <>
-            <ChatConversation messages={chat.messages} onSend={chat.sendMessage} />
-            <ChatComposer value={chat.draft} onChange={chat.setDraft} onSend={chat.sendMessage} />
+            <ChatConversation
+                messages={chat.messages}
+                replying={chat.replying}
+                onSend={chat.sendMessage}
+            />
+            <ChatComposer
+                replying={chat.replying}
+                onSend={chat.sendMessage}
+                onStop={chat.stopReply}
+            />
         </>
     );
 
@@ -39,7 +48,7 @@ export function ChatWidget() {
             <Affix position={{ bottom: 24, right: 24 }} zIndex={190}>
                 <Stack align='flex-end' gap='md'>
                     <Transition
-                        mounted={chat.opened && !mobile}
+                        mounted={opened && !mobile}
                         transition='slide-up'
                         duration={reducedMotion ? 0 : 180}
                     >
@@ -82,23 +91,23 @@ export function ChatWidget() {
                         size={56}
                         radius='xl'
                         className='shadow-lg'
-                        onClick={chat.toggle}
-                        aria-label={chat.opened ? 'Zamknij czat' : 'Otwórz czat z asystentem'}
-                        aria-expanded={chat.opened}
+                        onClick={toggle}
+                        aria-label={opened ? 'Zamknij czat' : 'Otwórz czat z asystentem'}
+                        aria-expanded={opened}
                         aria-controls={
-                            chat.opened
+                            opened
                                 ? mobile
                                     ? 'shopping-chat-mobile'
                                     : 'shopping-chat-desktop'
                                 : undefined
                         }
                     >
-                        {chat.opened ? <X size={25} /> : <MessageCircle size={25} />}
+                        {opened ? <X size={25} /> : <MessageCircle size={25} />}
                     </ActionIcon>
                 </Stack>
             </Affix>
             <Drawer
-                opened={chat.opened && !!mobile}
+                opened={opened && !!mobile}
                 onClose={close}
                 position='bottom'
                 size='100%'
