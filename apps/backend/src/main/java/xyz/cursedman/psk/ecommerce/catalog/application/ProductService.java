@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import xyz.cursedman.psk.ecommerce.catalog.domain.Product;
-import xyz.cursedman.psk.ecommerce.catalog.domain.ProductFilter;
 import xyz.cursedman.psk.ecommerce.catalog.domain.ProductFilterSpecifications;
 import xyz.cursedman.psk.ecommerce.catalog.domain.ProductRepository;
+import xyz.cursedman.psk.ecommerce.catalog.domain.ProductSortOrder;
 import xyz.cursedman.psk.ecommerce.catalog.domain.exception.ProductNotFoundException;
 
 @Service
@@ -25,9 +25,15 @@ public class ProductService {
 
 	private final ProductRepository productRepository;
 
-	public Page<Product> findProducts(ProductFilter filter, Pageable pageable) {
-		Page<Product> page = productRepository.findAll(ProductFilterSpecifications.matching(filter), pageable);
+	private static final Sort BY_ID = Sort.by("id");
+
+	public Page<Product> findProducts(ProductQuery query) {
+		Sort sort = sortOf(query.sortOrder()).and(BY_ID);
+		Pageable pageable = PageRequest.of(query.pageIndex(), query.pageSize(), sort);
+
+		Page<Product> page = productRepository.findAll(ProductFilterSpecifications.matching(query.filter()), pageable);
 		initializeImages(page.getContent());
+
 		return page;
 	}
 
@@ -40,7 +46,7 @@ public class ProductService {
 		Product product = productRepository.findById(id)
 			.orElseThrow(() -> new ProductNotFoundException(id));
 		return initializeImages(productRepository.findByCategoryAndIdNot(
-			product.getCategory(), id, PageRequest.of(0, limit, Sort.by("id"))));
+			product.getCategory(), id, PageRequest.of(0, limit, BY_ID)));
 	}
 
 	public List<String> findCategories() {
@@ -53,6 +59,15 @@ public class ProductService {
 
 	public List<String> findConnectivityOptions() {
 		return productRepository.findConnectivityOptions();
+	}
+
+	private static Sort sortOf(ProductSortOrder sortOrder) {
+		return switch (sortOrder) {
+			case DEFAULT -> Sort.unsorted();
+			case PRICE_ASC -> Sort.by("price").ascending();
+			case PRICE_DESC -> Sort.by("price").descending();
+			case NAME_ASC -> Sort.by("name").ascending();
+		};
 	}
 
 	/**
