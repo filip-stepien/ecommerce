@@ -9,15 +9,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import xyz.cursedman.psk.ecommerce.catalog.api.ProductMapper;
 import xyz.cursedman.psk.ecommerce.catalog.api.dto.ProductDto;
+import xyz.cursedman.psk.ecommerce.config.CurrentUserId;
 import xyz.cursedman.psk.ecommerce.config.OpenApiConfig;
 import xyz.cursedman.psk.ecommerce.recommendation.application.ProductRecommender;
 
@@ -37,10 +37,11 @@ public class RecommendationController {
 	@SecurityRequirement(name = OpenApiConfig.BEARER_AUTH)
 	@SecurityRequirement(name = OpenApiConfig.KEYCLOAK_AUTH)
 	public List<ProductDto> getRecommendedProducts(
-			@AuthenticationPrincipal Jwt jwt,
-			@Parameter(description = "Maximum number of products") @RequestParam(defaultValue = "8") @Min(1) @Max(24)
-			int limit) {
-		return productMapper.toDtos(productRecommender.recommend(jwt != null ? jwt.getSubject() : null, limit));
+		@CurrentUserId @Nullable String customerId,
+		@Parameter(description = "Maximum number of products") @RequestParam(defaultValue = "8") @Min(1) @Max(24)
+		int limit
+	) {
+		return productMapper.toDtos(productRecommender.recommend(customerId, limit));
 	}
 
 }
