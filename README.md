@@ -25,6 +25,10 @@ Uruchamia infrastrukturę, backend i frontend.
 
 Użytkownik testowy w realmie `ecommerce`: **`user` / `password`** (rola `user`).
 
+## Asystent AI
+
+Asystent korzysta z modelu Claude przez API Anthropic. Klucz podaje się w zmiennej środowiskowej `ANTHROPIC_API_KEY` przed uruchomieniem backendu. Bez klucza aplikacja działa normalnie, a czat odpowiada, że asystent jest niedostępny.
+
 ## Kontrakt API
 
 Frontendowe hooki pobierające dane z backendu powstają ze specyfikacji OpenAPI:
