@@ -12,8 +12,10 @@ import xyz.cursedman.psk.ecommerce.catalog.api.dto.ProductDetailsDto;
 import xyz.cursedman.psk.ecommerce.catalog.api.dto.ProductDto;
 import xyz.cursedman.psk.ecommerce.catalog.api.dto.ProductPageDto;
 import xyz.cursedman.psk.ecommerce.catalog.api.dto.ProductSpecificationDto;
+import xyz.cursedman.psk.ecommerce.catalog.application.ProductQuery;
 import xyz.cursedman.psk.ecommerce.catalog.domain.Product;
 import xyz.cursedman.psk.ecommerce.catalog.domain.ProductFilter;
+import xyz.cursedman.psk.ecommerce.catalog.domain.ProductSortOrder;
 import xyz.cursedman.psk.ecommerce.catalog.domain.ProductSpecification;
 import xyz.cursedman.psk.ecommerce.config.MapStructConfig;
 
@@ -29,7 +31,14 @@ public interface ProductMapper {
 
 	ProductSpecificationDto toDto(ProductSpecification specification);
 
+	@Mapping(target = "filter", source = ".")
+	@Mapping(target = "sortOrder", source = "sort")
+	@Mapping(target = "pageIndex", expression = "java(params.page() - 1)")
+	ProductQuery toQuery(ProductSearchParams params);
+
 	ProductFilter toFilter(ProductSearchParams params);
+
+	ProductSortOrder toSortOrder(ProductSort sort);
 
 	default ProductPageDto toPageDto(Page<Product> page) {
 		return new ProductPageDto(toDtos(page.getContent()), page.getTotalElements());
