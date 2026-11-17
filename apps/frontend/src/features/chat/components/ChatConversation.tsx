@@ -1,21 +1,24 @@
 import { useEffect, useRef } from 'react';
 import { Button, Paper, ScrollArea, Stack, Text, ThemeIcon } from '@mantine/core';
 import { Sparkles } from 'lucide-react';
-import type { ChatMessage } from '@/features/chat/hooks/useChat';
+import { AssistantReply } from '@/features/chat/components/AssistantReply';
+import type { ChatMessage } from '@/features/chat/lib/conversation';
 
 const suggestions = ['Słuchawki do 300 zł', 'Pomóż dobrać laptop', 'Zestaw do pracy z domu'];
 
 type ChatConversationProps = {
     messages: ChatMessage[];
+    replying: boolean;
     onSend: (value: string) => void;
 };
 
-export function ChatConversation({ messages, onSend }: ChatConversationProps) {
+export function ChatConversation({ messages, replying, onSend }: ChatConversationProps) {
     const viewport = useRef<HTMLDivElement>(null);
+    const lastMessage = messages.at(-1);
 
     useEffect(() => {
         viewport.current?.scrollTo({ top: viewport.current.scrollHeight });
-    }, [messages.length]);
+    }, [messages.length, lastMessage?.content.length, lastMessage?.products.length]);
 
     return (
         <ScrollArea className='min-h-0 flex-1' viewportRef={viewport} offsetScrollbars>
@@ -52,22 +55,23 @@ export function ChatConversation({ messages, onSend }: ChatConversationProps) {
                     aria-label='Historia rozmowy'
                     aria-live='polite'
                     aria-relevant='additions'
+                    aria-busy={replying}
                 >
-                    {messages.map(message => (
-                        <Paper
-                            key={message.id}
-                            p='sm'
-                            radius='lg'
-                            className={`max-w-[90%] ${message.role === 'user' ? 'self-end bg-(--mantine-color-blue-8) text-white' : 'self-start bg-(--mantine-color-gray-1) dark:bg-(--mantine-color-dark-6)'}`}
-                        >
-                            <Text size='xs' fw={600} mb={4}>
-                                {message.role === 'user' ? 'Ty' : 'Asystent volt'}
-                            </Text>
-                            <Text size='sm' className='whitespace-pre-wrap wrap-anywhere'>
-                                {message.content}
-                            </Text>
-                        </Paper>
-                    ))}
+                    {messages.map(message =>
+                        message.role === 'user' ? (
+                            <Paper
+                                key={message.id}
+                                className='max-w-[90%] self-end rounded-lg bg-(--mantine-color-blue-8) p-3 text-white'
+                            >
+                                <Text className='mb-1 text-xs font-semibold'>Ty</Text>
+                                <Text className='text-sm whitespace-pre-wrap wrap-anywhere'>
+                                    {message.content}
+                                </Text>
+                            </Paper>
+                        ) : (
+                            <AssistantReply key={message.id} reply={message} />
+                        )
+                    )}
                 </Stack>
             </Stack>
         </ScrollArea>
