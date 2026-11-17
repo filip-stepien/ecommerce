@@ -1,4 +1,4 @@
-import { getAccessToken } from '@/features/auth/lib/token';
+import { createAuthorizedHeaders } from '@/features/auth/lib/token';
 import { ApiError } from './error';
 
 export type ErrorType<TBody> = ApiError<TBody>;
@@ -12,12 +12,7 @@ async function readResponseBody(response: Response): Promise<unknown> {
 }
 
 export async function apiClient<T>(url: string, options: RequestInit): Promise<T> {
-    const accessToken = await getAccessToken();
-    const headers = new Headers(options.headers);
-
-    if (accessToken) {
-        headers.set('Authorization', `Bearer ${accessToken}`);
-    }
+    const headers = await createAuthorizedHeaders(options.headers);
 
     const response = await fetch(url, { ...options, headers });
     const body = await readResponseBody(response);
