@@ -27,7 +27,13 @@ Użytkownik testowy w realmie `ecommerce`: **`user` / `password`** (rola `user`)
 
 ## Asystent AI
 
-Asystent korzysta z modelu Claude przez API Anthropic. Klucz podaje się w zmiennej środowiskowej `ANTHROPIC_API_KEY` przed uruchomieniem backendu. Bez klucza aplikacja działa normalnie, a czat odpowiada, że asystent jest niedostępny.
+Asystent korzysta z modelu Claude przez API Anthropic. Klucz wpisuje się do pliku `apps/backend/.env` (jest w `.gitignore`), który `task backend:dev` wczytuje przy starcie. Wzorem jest `apps/backend/.env.example`:
+
+```sh
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
+Zmienna ustawiona w środowisku ma pierwszeństwo przed plikiem. Bez klucza aplikacja działa normalnie, a czat odpowiada, że asystent jest niedostępny.
 
 ## Kontrakt API
 
