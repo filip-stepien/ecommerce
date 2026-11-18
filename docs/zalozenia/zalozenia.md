@@ -16,7 +16,7 @@ wysyłka e-maili, opinie o produktach.
 | Backend        | Java, Spring Boot                                          | logika sklepu i inteligentnych usług      |
 | Baza danych    | PostgreSQL z rozszerzeniem pgvector                        | dane sklepu i wektory opisów produktów    |
 | Logowanie      | Keycloak (OAuth 2.0 / OpenID Connect)                      | rejestracja, logowanie, role              |
-| Model językowy | Claude Opus 5.5 (API Anthropic)                            | asystent AI                               |
+| Model językowy | Claude Haiku 5.5 (API Anthropic)                           | asystent AI                               |
 | Wektory opisów | wielojęzyczny model `bge-m3` uruchamiany lokalnie w Ollama | wyszukiwanie produktów po znaczeniu opisu |
 | Uruchamianie   | Docker Compose                                             | całe środowisko uruchamiane jedną komendą |
 
