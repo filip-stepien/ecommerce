@@ -38,9 +38,6 @@ a:hover{text-decoration:underline}
 .social-providers{display:flex;flex-direction:column;align-items:center;gap:10px}
 .register{margin:16px 0 0;color:#687586;font-size:13px;text-align:center}
 .register a{font-weight:600}
-.secure-note{display:flex;align-items:flex-start;gap:10px;margin-top:24px;color:#687586;font-size:12px;line-height:1.5}
-.secure-note img{flex:none;width:18px;height:18px}
-.secure-note p{margin:0}
 .message,.field-error{margin-bottom:16px;padding:9px 12px;border-radius:4px;font-size:13px}
 .message-error,.field-error{background:#fff0f0;color:#c92a2a}
 .message-success{background:#ebfbee;color:#2b8a3e}

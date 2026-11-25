@@ -63,7 +63,6 @@
             <p class="register">Nie masz konta? <a href="${url.registrationUrl}">Załóż konto</a></p>
           </#if>
         </div>
-        <div class="secure-note"><img src="${url.resourcesPath}/img/shield-check.svg" alt="" width="18" height="18"><p>Bezpieczne połączenie szyfrowane. Nie udostępniamy Twoich danych i nigdy nie prosimy o hasło do banku.</p></div>
       </section>
   </main>
   <@passkeys.conditionalUIData />
