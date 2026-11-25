@@ -1,4 +1,4 @@
-import { Button, Center, Paper, Stack, Text, UnstyledButton } from '@mantine/core';
+import { Button, Center, Image, Paper, Stack, Text, UnstyledButton } from '@mantine/core';
 import { Package } from 'lucide-react';
 import { Link, generatePath } from 'react-router';
 import type { Product } from '@/api/generated/model';
@@ -12,6 +12,7 @@ type ProductCardProps = {
 
 export function ProductCard({ product }: ProductCardProps) {
     const { addItem } = useCart();
+    const image = product.imageUrl ?? null;
 
     return (
         <Paper withBorder shadow='xs' className='rounded-lg p-[23px]'>
@@ -21,15 +22,27 @@ export function ProductCard({ product }: ProductCardProps) {
                     to={generatePath(appRoutes.product, { id: String(product.id) })}
                     className='flex flex-col gap-[17px]'
                 >
-                    <Center className='h-[173px] rounded-[5px] bg-placeholder'>
-                        <Package size={48} strokeWidth={1.25} className='text-dimmed' />
-                    </Center>
+                    {image ? (
+                        <Image
+                            src={image}
+                            alt={product.name}
+                            className='h-[173px] rounded-[5px] object-cover'
+                        />
+                    ) : (
+                        <Center className='h-[173px] rounded-[5px] bg-placeholder'>
+                            <Package size={48} strokeWidth={1.25} className='text-dimmed' />
+                        </Center>
+                    )}
                     <Text className='text-lg leading-[1.55] font-semibold'>{product.name}</Text>
                 </UnstyledButton>
                 <Text className='text-[22px] leading-[1.6] font-bold'>
                     {formatPrice(product.price)}
                 </Text>
-                <Button size='md' className='self-start' onClick={() => addItem(product)}>
+                <Button
+                    size='md'
+                    className='self-start'
+                    onClick={() => addItem(product, { image })}
+                >
                     Dodaj do koszyka
                 </Button>
             </Stack>
