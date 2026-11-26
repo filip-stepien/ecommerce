@@ -61,3 +61,22 @@ tasks:
       - task: infra:db
       - task: backend:openapi
       - task: frontend:api
+
+  docs:screenshots:
+    desc: Capture the report screenshots when the app has changed (--force to redo)
+    sources:
+      - apps/backend/src/main/**/*
+      - apps/frontend/src/**/*
+      - apps/frontend/e2e/**/*
+      - apps/frontend/playwright.config.ts
+      - keycloak/**/*
+    generates:
+      - docs/spr/img/screenshots.json
+    cmds:
+      - task: frontend:screenshots
+
+  docs:report:
+    desc: Build docs/spr/sprawozdanie.pdf, capturing screenshots first if needed
+    cmds:
+      - task: docs:screenshots
+      - typst compile docs/spr/sprawozdanie.typ

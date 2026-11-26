@@ -1,0 +1,15 @@
+[
+    "account",
+    "cart",
+    "catalog",
+    "catalog-filters",
+    "checkout",
+    "mobile-catalog",
+    "mobile-product",
+    "order-details",
+    "order-history",
+    "product",
+    "recommendations",
+    "sign-in",
+    "swagger"
+]
