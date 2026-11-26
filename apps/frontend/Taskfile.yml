@@ -46,3 +46,25 @@ tasks:
     deps: [install]
     cmds:
       - pnpm api:generate
+
+  browsers:
+    desc: Install the Playwright browser unless Nix provides it
+    deps: [install]
+    status:
+      - test -n "$PLAYWRIGHT_BROWSERS_PATH"
+    cmds:
+      - pnpm exec playwright install chromium
+
+  e2e:
+    desc: Run the Playwright functional tests, starting the app if it is not running
+    cmds:
+      - task: browsers
+      - task: :infra:up
+      - pnpm e2e {{.CLI_ARGS}}
+
+  screenshots:
+    desc: Capture the report screenshots, starting the app if it is not running
+    cmds:
+      - task: browsers
+      - task: :infra:up
+      - pnpm screenshots {{.CLI_ARGS}}
